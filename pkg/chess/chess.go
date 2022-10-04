@@ -21,6 +21,18 @@ func (kind PieceKind) String() string {
 	}[kind]
 }
 
+func (kind PieceKind) Name() string {
+	return [...]string{
+		" ",
+		"pawn",
+		"rook",
+		"knight",
+		"bishop",
+		"queen",
+		"king",
+	}[kind]
+}
+
 
 type PieceColor int
 
@@ -31,6 +43,10 @@ const (
 
 func (color PieceColor) String() string {
 	return [...]string{"w", "b"}[color]
+}
+
+func (color PieceColor) Name() string {
+	return [...]string{"white", "black"}[color]
 }
 
 
