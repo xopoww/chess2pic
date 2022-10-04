@@ -12,7 +12,7 @@ import (
 type mockColor byte
 
 func (mc mockColor) RGBA() (r uint32, g uint32, b uint32, a uint32) {
-	return uint32(mc), 0, 0, 1
+	return uint32(mc), 0, 0, 0xffff
 }
 
 

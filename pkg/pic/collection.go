@@ -39,10 +39,10 @@ func (col collection) Piece(p chess.Piece) Image {
 }
 
 
-func OpenCollection(dir fs.FS) (Collection, error) {
+func OpenCollection(dir fs.FS, prefix string) (Collection, error) {
 	col := collection{}
 
-	img, err := loadSquareImage(dir, "board.png")
+	img, err := loadSquareImage(dir, "board.png", prefix)
 	if err != nil {
 		return col, err
 	}
@@ -52,7 +52,7 @@ func OpenCollection(dir fs.FS) (Collection, error) {
 
 	for color := chess.White; color <= chess.Black; color++ {
 		for kind := chess.Pawn; kind <= chess.King; kind++ {
-			img, err = loadSquareImage(dir, path.Join(color.Name(), kind.Name() + ".png"))
+			img, err = loadSquareImage(dir, path.Join(color.Name(), kind.Name() + ".png"), prefix)
 			if err != nil {
 				return col, err
 			}
@@ -73,8 +73,8 @@ func OpenCollection(dir fs.FS) (Collection, error) {
 	return col, nil
 }
 
-func loadSquareImage(dir fs.FS, name string) (Image, error) {
-	f, err := dir.Open(name)
+func loadSquareImage(dir fs.FS, name, prefix string) (Image, error) {
+	f, err := dir.Open(path.Join(prefix, name))
 	if err != nil {
 		return nil, err
 	}
