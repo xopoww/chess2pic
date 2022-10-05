@@ -13,6 +13,26 @@ func TestStartingPosition(t *testing.T) {
 	}
 }
 
+func TestSquareString(t *testing.T) {
+	tcs := []struct{
+		file int
+		rank int
+		s string
+	}{
+		{0, 0, "a1"},
+		{4, 3, "e4"},
+		{7, 7, "h8"},
+	}
+	for _, tc := range tcs {
+		t.Run(fmt.Sprintf("test case (%d, %d)", tc.file, tc.rank), func(tt *testing.T) {
+			got := NewSquare(tc.file, tc.rank).String()
+			if got != tc.s {
+				tt.Errorf("want %q, got %q", tc.s, got)
+			}
+		})
+	}
+}
+
 func TestNewSquareFromString(t *testing.T) {
 	tcs := []struct{
 		s string
@@ -37,17 +57,6 @@ func TestNewSquareFromString(t *testing.T) {
 }
 
 func TestApply(t *testing.T) {
-	type squarePiece struct{
-		sq string
-		p  Piece
-	}
-	type move struct {
-		from string
-		to 	 string
-		ep 	 bool
-		cs 	 bool
-		pr 	 Piece
-	}
 
 	tcs :=  []struct {
 		name  string
@@ -93,24 +102,10 @@ func TestApply(t *testing.T) {
 		},
 	}
 
-	getPosition := func(sps []squarePiece) Position {
-		var pos Position
-		for _, sp := range sps {
-			pos = pos.Set(NewSquareFromString(sp.sq), sp.p)
-		}
-		return pos
-	}
-
 	for _, tc := range tcs {
 		t.Run(tc.name, func(tt *testing.T) {
 			start := getPosition(tc.start)
-			mov := Move{
-				From: NewSquareFromString(tc.mov.from),
-				To:   NewSquareFromString(tc.mov.to),
-				EnPassant: tc.mov.ep,
-				Castle:    tc.mov.cs,
-				Promotion: tc.mov.pr,
-			}
+			mov := getMove(tc.mov)
 			got := Apply(start, mov)
 			want := getPosition(tc.end)
 			for file := range want {

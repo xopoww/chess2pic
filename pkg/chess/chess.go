@@ -1,6 +1,7 @@
 package chess
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -68,6 +69,10 @@ func (p Piece) String() string {
 type Square struct {
 	file int
 	rank int
+}
+
+func (sq Square) String() string {
+	return fmt.Sprintf("%c%d", 'a' + sq.file, sq.rank + 1)
 }
 
 // NewSquare creates Square from file and rank coordinates.
@@ -148,6 +153,20 @@ type Move struct {
 	EnPassant bool
 	Castle	  bool
 	Promotion Piece
+}
+
+func (mov Move) String() string {
+	s := fmt.Sprintf("%s -> %s", mov.From, mov.To)
+	if mov.EnPassant {
+		return s + " (e.p.)"
+	}
+	if mov.Castle {
+		return s + " (castle)"
+	}
+	if mov.Promotion.Kind != None {
+		return s + fmt.Sprintf(" (=%s)", mov.Promotion)
+	}
+	return s
 }
 
 func Apply(pos Position, mov Move) Position {
