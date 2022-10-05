@@ -1,6 +1,8 @@
 package chess
 
-import "strings"
+import (
+	"strings"
+)
 
 
 type PieceKind int
@@ -70,7 +72,7 @@ type Square struct {
 
 // NewSquare creates Square from file and rank coordinates.
 // Both coordinates are represented as integers from 0 ("A" file or 1st rank) to 7 ("H" file or 8th rank). 
-// If either of coordinates falls out of this range, a zero-value ("A1") is retuned.
+// If either of coordinates falls out of this range, a zero-value ("A1") is returned.
 func NewSquare(file int, rank int) Square {
 	if file < 0 || file > 7 || rank < 0 || rank > 7 {
 		return Square{}
@@ -81,6 +83,16 @@ func NewSquare(file int, rank int) Square {
 	}
 }
 
+// NewSquareFromString creates square from its string representation (e.g. "G5").
+// Both lowercase and uppercase file letters are allowed. If s is not a valid square string, a zero-value ("A1") is returned.
+func NewSquareFromString(s string) Square {
+	if len(s) != 2 {
+		return Square{}
+	}
+	s = strings.ToLower(s)
+	return NewSquare(int(s[0] - 'a'), int(s[1] - '1'))
+}
+
 
 type Position [8][8]Piece
 
@@ -88,8 +100,9 @@ func (pos Position) Get(s Square) Piece {
 	return pos[s.file][s.rank]
 }
 
-func (pos Position) Set(s Square, p Piece) {
+func (pos Position) Set(s Square, p Piece) Position {
 	pos[s.file][s.rank] = p
+	return pos
 }
 
 func (pos Position) String() string {
@@ -124,5 +137,55 @@ func StartingPosition() Position {
 	pos[4][0] = Piece{Kind: King, Color: White}
 	pos[4][7] = Piece{Kind: King, Color: Black}
 	
+	return pos
+}
+
+
+type Move struct {
+	From Square
+	To   Square
+
+	EnPassant bool
+	Castle	  bool
+	Promotion Piece
+}
+
+func Apply(pos Position, mov Move) Position {
+	p := pos.Get(mov.From)
+	pos = pos.Set(mov.From, Piece{})
+
+	if mov.Promotion.Kind != None {
+		p = mov.Promotion
+	}
+	pos = pos.Set(mov.To, p)
+
+	if mov.Castle {
+		rookMove := Move{}
+		rookMove.From.rank = mov.From.rank
+		rookMove.To.rank = mov.From.rank
+
+		if mov.To.file == 6 {
+			// O-O
+			rookMove.From.file = 7
+			rookMove.To.file = 5
+		} else {
+			// O-O-O
+			rookMove.From.file = 0
+			rookMove.To.file = 3
+		}
+
+		return Apply(pos, rookMove)
+	}
+
+	if mov.EnPassant {
+		captured := mov.To
+		if p.Color == White {
+			captured.rank--
+		} else {
+			captured.rank++
+		}
+		pos = pos.Set(captured, Piece{})
+	}
+
 	return pos
 }
