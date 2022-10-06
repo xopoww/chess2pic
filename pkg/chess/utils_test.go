@@ -16,15 +16,23 @@ type move struct {
 func getPosition(sps []squarePiece) Position {
 	var pos Position
 	for _, sp := range sps {
-		pos = pos.Set(NewSquareFromString(sp.sq), sp.p)
+		pos = pos.Set(MustNewSquareFromString(sp.sq), sp.p)
 	}
 	return pos
 }
 
 func getMove(mov move) Move {
+	from, err := NewSquareFromString(mov.from)
+	if err != nil {
+		panic(err)
+	}
+	to, err := NewSquareFromString(mov.to)
+	if err != nil {
+		panic(err)
+	}
 	return Move{
-		From: NewSquareFromString(mov.from),
-		To:   NewSquareFromString(mov.to),
+		From: from,
+		To:   to,
 		EnPassant: mov.ep,
 		Castle:    mov.cs,
 		Promotion: mov.pr,

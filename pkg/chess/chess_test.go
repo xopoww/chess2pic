@@ -25,7 +25,7 @@ func TestSquareString(t *testing.T) {
 	}
 	for _, tc := range tcs {
 		t.Run(fmt.Sprintf("test case (%d, %d)", tc.file, tc.rank), func(tt *testing.T) {
-			got := NewSquare(tc.file, tc.rank).String()
+			got := MustNewSquare(tc.file, tc.rank).String()
 			if got != tc.s {
 				tt.Errorf("want %q, got %q", tc.s, got)
 			}
@@ -33,7 +33,7 @@ func TestSquareString(t *testing.T) {
 	}
 }
 
-func TestNewSquareFromString(t *testing.T) {
+func TestMustNewSquareFromString(t *testing.T) {
 	tcs := []struct{
 		s string
 		file int
@@ -45,7 +45,7 @@ func TestNewSquareFromString(t *testing.T) {
 	}
 	for _, tc := range tcs {
 		t.Run(fmt.Sprintf("test case %q", tc.s), func(tt *testing.T) {
-			sq := NewSquareFromString(tc.s)
+			sq := MustNewSquareFromString(tc.s)
 			if sq.file != tc.file {
 				tt.Errorf("wrong file: want %d, got %d", tc.file, sq.file)
 			}

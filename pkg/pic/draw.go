@@ -20,7 +20,7 @@ func DrawPosition(dst draw.Image, col Collection, pos chess.Position) {
 
 	for file := 0; file < 8; file++ {
 		for rank := 0; rank < 8; rank++ {
-			sq := chess.NewSquare(file, rank)
+			sq := chess.MustNewSquare(file, rank)
 			p := pos.Get(sq)
 			if p.Kind == chess.None {
 				continue

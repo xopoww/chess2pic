@@ -1,6 +1,7 @@
 package chess
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -75,27 +76,40 @@ func (sq Square) String() string {
 	return fmt.Sprintf("%c%d", 'a' + sq.file, sq.rank + 1)
 }
 
+
 // NewSquare creates Square from file and rank coordinates.
 // Both coordinates are represented as integers from 0 ("A" file or 1st rank) to 7 ("H" file or 8th rank). 
-// If either of coordinates falls out of this range, a zero-value ("A1") is returned.
-func NewSquare(file int, rank int) Square {
+// If either of coordinates falls out of this range, an error is returned.
+func NewSquare(file int, rank int) (Square, error) {
 	if file < 0 || file > 7 || rank < 0 || rank > 7 {
-		return Square{}
+		return Square{}, errors.New("bad coordinates")
 	}
 	return Square{
 		file: file,
 		rank: rank,
-	}
+	}, nil
+}
+
+// MustNewSquare acts like NewSquare, but silently ignores errors and returns zero-value ("A1") instead.
+func MustNewSquare(file int, rank int) Square {
+	sq, _ := NewSquare(file, rank)
+	return sq
 }
 
 // NewSquareFromString creates square from its string representation (e.g. "G5").
-// Both lowercase and uppercase file letters are allowed. If s is not a valid square string, a zero-value ("A1") is returned.
-func NewSquareFromString(s string) Square {
+// Both lowercase and uppercase file letters are allowed. If s is not a valid square string, an error is returned.
+func NewSquareFromString(s string) (Square, error) {
 	if len(s) != 2 {
-		return Square{}
+		return Square{}, errors.New("bad coordinates")
 	}
 	s = strings.ToLower(s)
 	return NewSquare(int(s[0] - 'a'), int(s[1] - '1'))
+}
+
+// MustNewSquareFromString acts like NewSquareFromString, but silently ignores errors and returns zero-value ("A1") instead.
+func MustNewSquareFromString(s string) Square {
+	sq, _ := NewSquareFromString(s)
+	return sq
 }
 
 

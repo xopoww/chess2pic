@@ -103,7 +103,7 @@ func (fp fenParser) Parse(r io.RuneReader) (Position, error) {
 			if file > 7 {
 				return pos, ErrTooLongRank
 			}
-			pos = pos.Set(NewSquare(file, rank), p)
+			pos = pos.Set(MustNewSquare(file, rank), p)
 			file += 1
 			continue
 		}
