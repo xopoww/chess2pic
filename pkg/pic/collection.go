@@ -3,6 +3,7 @@ package pic
 import (
 	"fmt"
 	"image"
+	"image/draw"
 	_ "image/png"
 	"io/fs"
 	"path"
@@ -23,6 +24,15 @@ type Collection interface {
 }
 
 
+type CanvasCollection interface {
+	Collection
+
+	// Canvas returns draw.Image on which images from the collection should be drawn.
+	// Bounds of returned image are exactly as Board().Bounds().
+	Canvas() draw.Image
+}
+
+
 type collection struct {
 	images [1 + 6 + 6]Image
 }
@@ -36,6 +46,10 @@ func (col collection) Piece(p chess.Piece) Image {
 		return nil
 	}
 	return col.images[1 + int(p.Color * 6) + int(p.Kind - chess.Pawn)]
+}
+
+func (col collection) Canvas() draw.Image {
+	return image.NewRGBA(col.Board().Bounds())
 }
 
 

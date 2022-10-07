@@ -4,13 +4,11 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"image"
-	"image/png"
 	"io"
 	"os"
 	"strings"
 
-	"github.com/xopoww/chess2pic/pkg/chess"
+	"github.com/xopoww/chess2pic/internal/chess2pic"
 	"github.com/xopoww/chess2pic/pkg/pic"
 )
 
@@ -30,52 +28,40 @@ func init() {
 	flag.StringVar(&args.notation, "notation", "", "notation syntax name")
 	flag.StringVar(&args.input, "in", "", "input file name")
 	flag.StringVar(&args.data, "data", "", "input text")
-	flag.StringVar(&args.output, "out", "chess2pic.png", "output file name")
+	flag.StringVar(&args.output, "out", "chess2pic", "output file name (without extension)")
+
+	flag.BoolVar(&chess2pic.DEBUG, "debug", false, "enable debug output")
 }
 
 func main() {
 	flag.Parse()
 
 	if args.notation == "" {
-		fmt.Fprint(os.Stderr, "--notation is required")
-		os.Exit(1)
+		chess2pic.Fatalf("--notation is required")
 	}
 
-	var r io.RuneReader
+	var in io.Reader
 	if args.input != "" {
 		f, err := os.Open(args.input)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error opening %q: %s", args.input, err)
-			os.Exit(1)
+			chess2pic.Fatalf("error opening %q: %s", args.input, err)
 		}
-		r = bufio.NewReader(f)
+		defer f.Close()
+		in = bufio.NewReader(f)
 	} else {
-		r = strings.NewReader(args.data)
+		in = strings.NewReader(args.data)
 	}
 
+	var err error
 	switch args.notation {
 	case "fen":
-		pos, err := chess.FEN().Parse(r)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "parse error: %s", err)
-			os.Exit(1)
-		}
-
-		img := image.NewRGBA(pic.DefaultCollection.Board().Bounds())
-		pic.DrawPosition(img, pic.DefaultCollection, pos)
-		
-		f, err := os.Create(args.output)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "error creating %q: %s", args.output, err)
-			os.Exit(1)
-		}
-		err = png.Encode(f, img)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "error writing png file: %s", err)
-			os.Exit(1)
-		}
+		err = chess2pic.HandleFEN(in, args.output, pic.DefaultCollection)
+	case "pgn":
+		err = chess2pic.HandlePGN(in, args.output, pic.DefaultCollection)
 	default:
-		fmt.Fprintf(os.Stderr, "unknown notation: %q", args.notation)
-		os.Exit(1)
+		err = fmt.Errorf("unknown notation: %q", args.notation)
+	}
+	if err != nil {
+		chess2pic.Fatalf(err.Error())
 	}
 }

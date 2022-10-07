@@ -1,2 +1,4 @@
-chess2pic
 *.png
+*.gif
+notations/
+build/

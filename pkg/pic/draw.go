@@ -7,7 +7,17 @@ import (
 	"github.com/xopoww/chess2pic/pkg/chess"
 )
 
-func DrawPosition(dst draw.Image, col Collection, pos chess.Position) {
+// DrawPosition creates a draw.Image from Position using Collection.
+// If Collection is a CanvasCollection, its Canvas() method is used to create resulting image,
+// otherwise image.NewRGBA() is used.
+func DrawPosition(col Collection, pos chess.Position) draw.Image {
+	var dst draw.Image
+	if ccol, ok := col.(CanvasCollection); ok {
+		dst = ccol.Canvas()
+	} else {
+		dst = image.NewRGBA(col.Board().Bounds())
+	}
+
 	if dst.Bounds() != col.Board().Bounds() {
 		panic("invalid dst bounds")
 	}
@@ -32,4 +42,5 @@ func DrawPosition(dst draw.Image, col Collection, pos chess.Position) {
 			draw.Draw(dst, image.Rect(x, y, x + ps, y + ps), img, image.Pt(0, 0), draw.Over)
 		}
 	}
+	return dst
 }

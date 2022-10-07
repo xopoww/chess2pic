@@ -127,7 +127,7 @@ func ParsePGN(r io.Reader) (PGNResult, error) {
 
 	movs, err := Algebraic().Parse(res.Start, rs)
 	if err != nil {
-		return res, nil
+		return res, err
 	}
 	res.Moves = movs
 

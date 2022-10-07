@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"image"
 	"image/color"
+	"image/draw"
 	"testing"
 
 	"github.com/xopoww/chess2pic/pkg/chess"
@@ -65,13 +66,23 @@ func (mcol mockCollection) Piece(p chess.Piece) Image {
 	}
 }
 
+func (mcol mockCollection) Canvas() draw.Image {
+	return &mockImage{
+		size: 8,
+	}
+}
+
 
 
 func TestDrawPosition(t *testing.T) {
-	dst := &mockImage{size: 8}
 	col := mockCollection{}
 	pos := chess.StartingPosition()
-	DrawPosition(dst, col, pos)
+	
+	ddst := DrawPosition(col, pos)
+	dst, ok := ddst.(*mockImage)
+	if !ok {
+		t.Fatalf("wrong draw.Image type (got %#v)", ddst)
+	}
 
 	wantDataHex :=
 		"1213141516141312"+

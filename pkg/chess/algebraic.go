@@ -283,8 +283,15 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 			} else {
 				dRank = 1
 			}
-			addSource(destination.file, destination.rank + dRank)
-			if p.Color == White && destination.rank == 3 || p.Color == Black && destination.rank == 4 {
+			sq, err := NewSquare(destination.file, destination.rank + dRank)
+			if err != nil {
+				break
+			}
+			pp := pos.Get(sq)
+			if pp == p {
+				sources = append(sources, sq)
+				break
+			} else if pp.Kind == None && (p.Color == White && destination.rank == 3 || p.Color == Black && destination.rank == 4) {
 				addSource(destination.file, destination.rank + dRank * 2)
 			}
 		}
