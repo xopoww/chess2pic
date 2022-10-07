@@ -10,18 +10,18 @@ import (
 // DrawPosition creates a draw.Image from Position using Collection.
 // If Collection is a CanvasCollection, its Canvas() method is used to create resulting image,
 // otherwise image.NewRGBA() is used.
-func DrawPosition(col Collection, pos chess.Position) draw.Image {
+func DrawPosition(col Collection, pos chess.Position, fromPerspective chess.PieceColor) draw.Image {
 	var dst draw.Image
 	if ccol, ok := col.(CanvasCollection); ok {
 		dst = ccol.Canvas()
 	} else {
-		dst = image.NewRGBA(col.Board().Bounds())
+		dst = image.NewRGBA(col.Board(fromPerspective).Bounds())
 	}
 
-	if dst.Bounds() != col.Board().Bounds() {
+	if dst.Bounds() != col.Board(fromPerspective).Bounds() {
 		panic("invalid dst bounds")
 	}
-	draw.Draw(dst, dst.Bounds(), col.Board(), image.Pt(0, 0), draw.Over)
+	draw.Draw(dst, dst.Bounds(), col.Board(fromPerspective), image.Pt(0, 0), draw.Over)
 
 	bs := dst.Bounds().Dx()
 	ss := bs / 8
@@ -37,8 +37,17 @@ func DrawPosition(col Collection, pos chess.Position) draw.Image {
 			}
 
 			img := col.Piece(p)
-			x := file*ss + off
-			y := (7-rank)*ss + off
+			var (
+				x int
+				y int
+			)
+			if fromPerspective == chess.White {
+				x = file*ss + off
+				y = (7-rank)*ss + off
+			} else {
+				x = (7-file)*ss + off
+				y = rank*ss + off
+			}
 			draw.Draw(dst, image.Rect(x, y, x+ps, y+ps), img, image.Pt(0, 0), draw.Over)
 		}
 	}

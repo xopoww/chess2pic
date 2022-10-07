@@ -2,6 +2,7 @@ package pic
 
 import (
 	"encoding/hex"
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -42,7 +43,7 @@ func (mi *mockImage) Set(x int, y int, c color.Color) {
 
 type mockCollection struct{}
 
-func (mcol mockCollection) Board() Image {
+func (mcol mockCollection) Board(fromPerspective chess.PieceColor) Image {
 	data := [64]byte{}
 	for i := range data {
 		data[i] = 0xFF
@@ -74,38 +75,55 @@ func TestDrawPosition(t *testing.T) {
 	col := mockCollection{}
 	pos := chess.StartingPosition()
 
-	ddst := DrawPosition(col, pos)
-	dst, ok := ddst.(*mockImage)
-	if !ok {
-		t.Fatalf("wrong draw.Image type (got %#v)", ddst)
-	}
+	for from := chess.White; from <= chess.Black; from++ {
+		t.Run(fmt.Sprintf("from %s", from.Name()), func(tt *testing.T) {
+			ddst := DrawPosition(col, pos, from)
+			dst, ok := ddst.(*mockImage)
+			if !ok {
+				tt.Fatalf("wrong draw.Image type (got %#v)", ddst)
+			}
 
-	wantDataHex :=
-		"1213141516141312" +
-			"1111111111111111" +
-			"ffffffffffffffff" +
-			"ffffffffffffffff" +
-			"ffffffffffffffff" +
-			"ffffffffffffffff" +
-			"0101010101010101" +
-			"0203040506040302"
-	wantData, err := hex.DecodeString(wantDataHex)
-	if err != nil {
-		panic(err)
-	}
+			var wantDataHex string
+			if from == chess.White {
+				wantDataHex =
+					"1213141516141312" +
+						"1111111111111111" +
+						"ffffffffffffffff" +
+						"ffffffffffffffff" +
+						"ffffffffffffffff" +
+						"ffffffffffffffff" +
+						"0101010101010101" +
+						"0203040506040302"
+			} else {
+				wantDataHex =
+					"0203040605040302" +
+						"0101010101010101" +
+						"ffffffffffffffff" +
+						"ffffffffffffffff" +
+						"ffffffffffffffff" +
+						"ffffffffffffffff" +
+						"1111111111111111" +
+						"1213141615141312"
+			}
+			wantData, err := hex.DecodeString(wantDataHex)
+			if err != nil {
+				panic(err)
+			}
 
-	gotData := dst.data
-	if len(gotData) != len(wantData) {
-		t.Fatalf("want len = %d, got len = %d", len(wantData), len(gotData))
-	}
-	nMismathes := 0
-	for i := range wantData {
-		if wantData[i] != gotData[i] {
-			nMismathes++
-			t.Errorf("mismatch at %d: want %02x, got %02x", i, wantData[i], gotData[i])
-		}
-	}
-	if nMismathes > 0 {
-		t.Errorf("total of %d mismatches", nMismathes)
+			gotData := dst.data
+			if len(gotData) != len(wantData) {
+				tt.Fatalf("want len = %d, got len = %d", len(wantData), len(gotData))
+			}
+			nMismathes := 0
+			for i := range wantData {
+				if wantData[i] != gotData[i] {
+					nMismathes++
+					tt.Errorf("mismatch at %d: want %02x, got %02x", i, wantData[i], gotData[i])
+				}
+			}
+			if nMismathes > 0 {
+				tt.Errorf("total of %d mismatches", nMismathes)
+			}
+		})
 	}
 }

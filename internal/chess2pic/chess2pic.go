@@ -21,7 +21,7 @@ func readerToRuneReader(r io.Reader) io.RuneReader {
 	}
 }
 
-func HandleFEN(in io.Reader, outFile string, col pic.Collection) error {
+func HandleFEN(in io.Reader, outFile string, col pic.Collection, from chess.PieceColor) error {
 	rs := readerToRuneReader(in)
 
 	pos, err := chess.FEN().Parse(rs)
@@ -29,7 +29,7 @@ func HandleFEN(in io.Reader, outFile string, col pic.Collection) error {
 		return err
 	}
 
-	img := pic.DrawPosition(col, pos)
+	img := pic.DrawPosition(col, pos, from)
 	out, err := os.Create(outFile + ".png")
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func HandleFEN(in io.Reader, outFile string, col pic.Collection) error {
 	return png.Encode(out, img)
 }
 
-func HandlePGN(in io.Reader, outFile string, col pic.Collection) error {
+func HandlePGN(in io.Reader, outFile string, col pic.Collection, from chess.PieceColor) error {
 	res, err := chess.ParsePGN(in)
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func HandlePGN(in io.Reader, outFile string, col pic.Collection) error {
 	dst := &gif.GIF{}
 	quantizer := gogif.MedianCutQuantizer{NumColor: 64}
 	for _, pos := range poss {
-		img := pic.DrawPosition(col, pos)
+		img := pic.DrawPosition(col, pos, from)
 		pimg := image.NewPaletted(img.Bounds(), nil)
 		quantizer.Quantize(pimg, img.Bounds(), img, image.Point{})
 		dst.Image = append(dst.Image, pimg)

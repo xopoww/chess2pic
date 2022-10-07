@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/xopoww/chess2pic/internal/chess2pic"
+	"github.com/xopoww/chess2pic/pkg/chess"
 	"github.com/xopoww/chess2pic/pkg/pic"
 )
 
@@ -18,6 +19,8 @@ var args struct {
 	input  string
 	data   string
 	output string
+
+	from string
 }
 
 func init() {
@@ -29,6 +32,7 @@ func init() {
 	flag.StringVar(&args.input, "in", "", "input file name")
 	flag.StringVar(&args.data, "data", "", "input text")
 	flag.StringVar(&args.output, "out", "chess2pic", "output file name (without extension)")
+	flag.StringVar(&args.from, "from", "white", "from which player's perspective (\"white\" or \"black\") to draw")
 
 	flag.BoolVar(&chess2pic.DEBUG, "debug", false, "enable debug output")
 }
@@ -38,6 +42,16 @@ func main() {
 
 	if args.notation == "" {
 		chess2pic.Fatalf("--notation is required")
+	}
+
+	var from chess.PieceColor
+	switch args.from {
+	case "white":
+		from = chess.White
+	case "black":
+		from = chess.Black
+	default:
+		chess2pic.Fatalf("invalid --from value: %q", args.from)
 	}
 
 	var in io.Reader
@@ -55,9 +69,9 @@ func main() {
 	var err error
 	switch args.notation {
 	case "fen":
-		err = chess2pic.HandleFEN(in, args.output, pic.DefaultCollection)
+		err = chess2pic.HandleFEN(in, args.output, pic.DefaultCollection, from)
 	case "pgn":
-		err = chess2pic.HandlePGN(in, args.output, pic.DefaultCollection)
+		err = chess2pic.HandlePGN(in, args.output, pic.DefaultCollection, from)
 	default:
 		err = fmt.Errorf("unknown notation: %q", args.notation)
 	}

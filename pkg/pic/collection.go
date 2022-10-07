@@ -17,7 +17,7 @@ type Image image.Image
 // All images must have square dimensions and all piece images must be the same size.
 // The size of piece image must not exceed the size of board image divided by 8.
 type Collection interface {
-	Board() Image
+	Board(fromPerspective chess.PieceColor) Image
 	// Piece returns an image for the specified chess piece.
 	// If p.Kind == None, Piece should return nil Image.
 	Piece(p chess.Piece) Image
@@ -32,42 +32,45 @@ type CanvasCollection interface {
 }
 
 type collection struct {
-	images [1 + 6 + 6]Image
+	images [2 + 6 + 6]Image
 }
 
-func (col collection) Board() Image {
-	return col.images[0]
+func (col collection) Board(fromPerspective chess.PieceColor) Image {
+	if fromPerspective == chess.White {
+		return col.images[0]
+	} else {
+		return col.images[1]
+	}
 }
 
 func (col collection) Piece(p chess.Piece) Image {
 	if p.Kind == chess.None {
 		return nil
 	}
-	return col.images[1+int(p.Color*6)+int(p.Kind-chess.Pawn)]
+	return col.images[2+int(p.Color*6)+int(p.Kind-chess.Pawn)]
 }
 
 func (col collection) Canvas() draw.Image {
-	return image.NewRGBA(col.Board().Bounds())
+	return image.NewRGBA(col.Board(chess.White).Bounds())
 }
 
 func OpenCollection(dir fs.FS, prefix string) (Collection, error) {
 	col := collection{}
 
-	img, err := loadSquareImage(dir, "board.png", prefix)
-	if err != nil {
-		return col, err
-	}
-	col.images[0] = img
-	bs := img.Bounds().Dx()
 	ps := -1
-
 	for color := chess.White; color <= chess.Black; color++ {
+		img, err := loadSquareImage(dir, "board_"+color.Name()+".png", prefix)
+		if err != nil {
+			return col, err
+		}
+		col.images[color] = img
+		bs := img.Bounds().Dx()
 		for kind := chess.Pawn; kind <= chess.King; kind++ {
 			img, err = loadSquareImage(dir, path.Join(color.Name(), kind.Name()+".png"), prefix)
 			if err != nil {
 				return col, err
 			}
-			col.images[1+int(color)*6+int(kind-chess.Pawn)] = img
+			col.images[2+int(color)*6+int(kind-chess.Pawn)] = img
 			if ps < 0 {
 				ps = img.Bounds().Dx()
 				if ps*8 > bs {
