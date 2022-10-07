@@ -253,17 +253,7 @@ func TestAlgParserParse(t *testing.T) {
 			if tc.wantErr != (err != nil) {
 				tt.Fatalf("want error: %t, got error: %v", tc.wantErr, err)
 			}
-			for i := 0; i < len(want) && i < len(got); i++ {
-				if want[i] != got[i] {
-					tt.Errorf("at [%d]: want %q, got %q", i, want[i], got[i])
-				}
-			}
-			for i := len(want); i < len(got); i++ {
-				tt.Errorf("extra move: %q", got[i])
-			}
-			for i := len(got); i < len(want); i++ {
-				tt.Errorf("missing move: %q", want[i])
-			}
+			assertMoves(tt, want, got)
 		})
 	}
 }
