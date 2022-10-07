@@ -5,17 +5,17 @@ import (
 	"testing"
 )
 
-type squarePiece struct{
+type squarePiece struct {
 	sq string
 	p  Piece
 }
 
 type move struct {
 	from string
-	to 	 string
-	ep 	 bool
-	cs 	 bool
-	pr 	 Piece
+	to   string
+	ep   bool
+	cs   bool
+	pr   Piece
 }
 
 func getPosition(sps []squarePiece) Position {
@@ -36,8 +36,8 @@ func getMove(mov move) Move {
 		panic(err)
 	}
 	return Move{
-		From: from,
-		To:   to,
+		From:      from,
+		To:        to,
 		EnPassant: mov.ep,
 		Castle:    mov.cs,
 		Promotion: mov.pr,

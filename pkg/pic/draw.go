@@ -37,9 +37,9 @@ func DrawPosition(col Collection, pos chess.Position) draw.Image {
 			}
 
 			img := col.Piece(p)
-			x := file * ss + off
-			y := (7 - rank) * ss + off
-			draw.Draw(dst, image.Rect(x, y, x + ps, y + ps), img, image.Pt(0, 0), draw.Over)
+			x := file*ss + off
+			y := (7-rank)*ss + off
+			draw.Draw(dst, image.Rect(x, y, x+ps, y+ps), img, image.Pt(0, 0), draw.Over)
 		}
 	}
 	return dst

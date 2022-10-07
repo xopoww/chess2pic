@@ -7,20 +7,20 @@ import (
 
 func TestPgnParse(t *testing.T) {
 
-	tcs := []struct{
+	tcs := []struct {
 		name     string
 		notation string
 		want     pgnResult
 	}{
 		{
-			name: "from starting position",
+			name:     "from starting position",
 			notation: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6",
 			want: pgnResult{
 				movs: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6",
 			},
 		},
 		{
-			name: "with tags",
+			name:     "with tags",
 			notation: "[Foo \"bar\"]\n[Baz \"quux\"]\n\n1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6",
 			want: pgnResult{
 				movs: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6",
@@ -31,18 +31,18 @@ func TestPgnParse(t *testing.T) {
 			},
 		},
 		{
-			name: "from position",
+			name:     "from position",
 			notation: "[FEN \"k7/1p6/8/8/8/8/6P1/7K w - - 0 1\"]\n\n1. g4 b5 2. g5 b4",
 			want: pgnResult{
 				start: "k7/1p6/8/8/8/8/6P1/7K",
-				movs: "1. g4 b5 2. g5 b4",
+				movs:  "1. g4 b5 2. g5 b4",
 				tags: map[string]string{
 					"FEN": "k7/1p6/8/8/8/8/6P1/7K w - - 0 1",
 				},
 			},
 		},
 		{
-			name: "tags with escape sequences",
+			name:     "tags with escape sequences",
 			notation: "[Foo \"ba\\\"r\"]\n[Baz \"qu\\\\ux\"]\n\n1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6",
 			want: pgnResult{
 				movs: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6",
@@ -53,7 +53,7 @@ func TestPgnParse(t *testing.T) {
 			},
 		},
 	}
-	
+
 	for _, tc := range tcs {
 		t.Run(tc.name, func(tt *testing.T) {
 			want := getPgnResult(tc.want)

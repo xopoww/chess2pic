@@ -16,7 +16,6 @@ func (mc mockColor) RGBA() (r uint32, g uint32, b uint32, a uint32) {
 	return uint32(mc), 0, 0, 0xffff
 }
 
-
 type mockImage struct {
 	size int
 	data [64]byte
@@ -34,13 +33,12 @@ func (mi *mockImage) Bounds() image.Rectangle {
 }
 
 func (mi *mockImage) At(x int, y int) color.Color {
-	return mockColor(mi.data[x + y * mi.size])
+	return mockColor(mi.data[x+y*mi.size])
 }
 
 func (mi *mockImage) Set(x int, y int, c color.Color) {
-	mi.data[x + y * mi.size] = byte(mi.ColorModel().Convert(c).(mockColor))
+	mi.data[x+y*mi.size] = byte(mi.ColorModel().Convert(c).(mockColor))
 }
-
 
 type mockCollection struct{}
 
@@ -72,12 +70,10 @@ func (mcol mockCollection) Canvas() draw.Image {
 	}
 }
 
-
-
 func TestDrawPosition(t *testing.T) {
 	col := mockCollection{}
 	pos := chess.StartingPosition()
-	
+
 	ddst := DrawPosition(col, pos)
 	dst, ok := ddst.(*mockImage)
 	if !ok {
@@ -85,14 +81,14 @@ func TestDrawPosition(t *testing.T) {
 	}
 
 	wantDataHex :=
-		"1213141516141312"+
-		"1111111111111111"+
-		"ffffffffffffffff"+
-		"ffffffffffffffff"+
-		"ffffffffffffffff"+
-		"ffffffffffffffff"+
-		"0101010101010101"+
-		"0203040506040302"
+		"1213141516141312" +
+			"1111111111111111" +
+			"ffffffffffffffff" +
+			"ffffffffffffffff" +
+			"ffffffffffffffff" +
+			"ffffffffffffffff" +
+			"0101010101010101" +
+			"0203040506040302"
 	wantData, err := hex.DecodeString(wantDataHex)
 	if err != nil {
 		panic(err)

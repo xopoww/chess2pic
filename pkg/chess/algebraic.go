@@ -15,20 +15,18 @@ const (
 	black
 )
 
-
 type IllegalMoveError struct {
 	FullmoveIndex int
-	Color		  PieceColor
-	Notation	  string
+	Color         PieceColor
+	Notation      string
 }
 
 func (err IllegalMoveError) Error() string {
-	return fmt.Sprintf("illegal move #%d for %s: %q", err.FullmoveIndex + 1, err.Color.Name(), err.Notation)
+	return fmt.Sprintf("illegal move #%d for %s: %q", err.FullmoveIndex+1, err.Color.Name(), err.Notation)
 }
 
-
 type InvalidSyntaxError struct {
-	At int
+	At     int
 	Reason string
 }
 
@@ -36,13 +34,12 @@ func (err InvalidSyntaxError) Error() string {
 	return fmt.Sprintf("invalid SAN syntax at %d: %s", err.At, err.Reason)
 }
 
-
 type algParser struct {
-	state int
+	state   int
 	lastNum int
-	nread int
-	pos  Position
-	movs []Move
+	nread   int
+	pos     Position
+	movs    []Move
 }
 
 func Algebraic() MoveParser {
@@ -75,8 +72,8 @@ func (ap *algParser) handleNumber(cs []rune) error {
 	if err != nil {
 		return InvalidSyntaxError{At: ap.nread - len(s), Reason: fmt.Sprintf("invalid move number notation: %q", s)}
 	}
-	if ap.lastNum > 0 && ap.lastNum + 1 != int(num) {
-		return InvalidSyntaxError{At: ap.nread - len(s), Reason: fmt.Sprintf("expected move #%d, got #%d", ap.lastNum + 1, num)}
+	if ap.lastNum > 0 && ap.lastNum+1 != int(num) {
+		return InvalidSyntaxError{At: ap.nread - len(s), Reason: fmt.Sprintf("expected move #%d, got #%d", ap.lastNum+1, num)}
 	}
 
 	ap.lastNum = int(num)
@@ -107,7 +104,7 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 
 	// find king for pinned pieces checks
 	var king Square
-	findKing:
+findKing:
 	for file := range pos {
 		for rank := range pos[file] {
 			sq := MustNewSquare(file, rank)
@@ -140,7 +137,7 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 					break
 				}
 			}
-		// check lateral pin (same rank)
+			// check lateral pin (same rank)
 		} else if king.rank == sq.rank && king.rank != destination.rank {
 			var df int
 			if king.file < sq.file {
@@ -156,7 +153,7 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 					break
 				}
 			}
-		// check diagonal pin
+			// check diagonal pin
 		} else if OnDiag(king, sq) {
 			var (
 				dr int
@@ -173,10 +170,10 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 				df = -1
 			}
 			// check that the piece leaves the diagonal
-			leftDiag := !OnDiag(king, destination) || ((king.rank - destination.rank) * (king.file - destination.file)) * (dr * df) < 0
+			leftDiag := !OnDiag(king, destination) || ((king.rank-destination.rank)*(king.file-destination.file))*(dr*df) < 0
 			if leftDiag {
 				for d := 1; ; d++ {
-					ssq, err := NewSquare(sq.file + d * df, sq.rank + d * dr)
+					ssq, err := NewSquare(sq.file+d*df, sq.rank+d*dr)
 					if err != nil {
 						break
 					}
@@ -191,7 +188,7 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 		}
 		return false
 	}
-	
+
 	addSource := func(file, rank int) {
 		sq, err := NewSquare(file, rank)
 		if err != nil {
@@ -211,7 +208,7 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 				d := 0
 				for {
 					d++
-					source, err := NewSquare(destination.file + df * d, destination.rank + dr * d)
+					source, err := NewSquare(destination.file+df*d, destination.rank+dr*d)
 					if err != nil {
 						break
 					}
@@ -232,7 +229,7 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 			d := 0
 			for {
 				d++
-				source, err := NewSquare(destination.file + df * d, destination.rank)
+				source, err := NewSquare(destination.file+df*d, destination.rank)
 				if err != nil {
 					break
 				}
@@ -249,7 +246,7 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 			d := 0
 			for {
 				d++
-				source, err := NewSquare(destination.file, destination.rank + dr * d)
+				source, err := NewSquare(destination.file, destination.rank+dr*d)
 				if err != nil {
 					break
 				}
@@ -274,7 +271,7 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 				rank = destination.rank + 1
 			}
 			for df := -1; df <= 1; df += 2 {
-				addSource(destination.file + df, rank)
+				addSource(destination.file+df, rank)
 			}
 		} else {
 			var dRank int
@@ -283,7 +280,7 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 			} else {
 				dRank = 1
 			}
-			sq, err := NewSquare(destination.file, destination.rank + dRank)
+			sq, err := NewSquare(destination.file, destination.rank+dRank)
 			if err != nil {
 				break
 			}
@@ -292,18 +289,18 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 				sources = append(sources, sq)
 				break
 			} else if pp.Kind == None && (p.Color == White && destination.rank == 3 || p.Color == Black && destination.rank == 4) {
-				addSource(destination.file, destination.rank + dRank * 2)
+				addSource(destination.file, destination.rank+dRank*2)
 			}
 		}
 	case Knight:
-		addSource(destination.file - 1, destination.rank - 2)
-		addSource(destination.file + 1, destination.rank - 2)
-		addSource(destination.file - 1, destination.rank + 2)
-		addSource(destination.file + 1, destination.rank + 2)
-		addSource(destination.file - 2, destination.rank - 1)
-		addSource(destination.file + 2, destination.rank - 1)
-		addSource(destination.file - 2, destination.rank + 1)
-		addSource(destination.file + 2, destination.rank + 1)
+		addSource(destination.file-1, destination.rank-2)
+		addSource(destination.file+1, destination.rank-2)
+		addSource(destination.file-1, destination.rank+2)
+		addSource(destination.file+1, destination.rank+2)
+		addSource(destination.file-2, destination.rank-1)
+		addSource(destination.file+2, destination.rank-1)
+		addSource(destination.file-2, destination.rank+1)
+		addSource(destination.file+2, destination.rank+1)
 	case Bishop:
 		addDiagonal()
 	case Rook:
@@ -317,7 +314,7 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 				if df == 0 && dr == 8 {
 					continue
 				}
-				addSource(destination.file + df, destination.rank + dr)
+				addSource(destination.file+df, destination.rank+dr)
 			}
 		}
 	}
@@ -351,7 +348,7 @@ func (ap *algParser) handleMove(cs []rune) error {
 	// handle castling
 	if s == "O-O" || s == "O-O-O" {
 		p.Kind = King
-		
+
 		var rank int
 		if p.Color == White {
 			rank = 0
@@ -359,10 +356,10 @@ func (ap *algParser) handleMove(cs []rune) error {
 			rank = 7
 		}
 		var (
-			kFile  int = 4  // file of square with the king
-			nkFile int      // file of square for the king (must be none)
-			rFile  int      // file of square with the rook
-			nrFile int      // file of square for the rook (must be none)
+			kFile  int = 4 // file of square with the king
+			nkFile int     // file of square for the king (must be none)
+			rFile  int     // file of square with the rook
+			nrFile int     // file of square for the rook (must be none)
 		)
 		if s == "O-O" {
 			nkFile = 6
@@ -373,8 +370,8 @@ func (ap *algParser) handleMove(cs []rune) error {
 			rFile = 0
 			nrFile = 3
 		}
-		
-		checks := []struct{
+
+		checks := []struct {
 			file int
 			want PieceKind
 		}{
@@ -387,8 +384,8 @@ func (ap *algParser) handleMove(cs []rune) error {
 			}
 		}
 		ap.addMove(Move{
-			From: MustNewSquare(kFile, rank),
-			To: MustNewSquare(nkFile, rank),
+			From:   MustNewSquare(kFile, rank),
+			To:     MustNewSquare(nkFile, rank),
 			Castle: true,
 		})
 		return nil
@@ -449,9 +446,9 @@ func (ap *algParser) handleMove(cs []rune) error {
 		if target.Kind == None {
 			if p.Kind == Pawn {
 				if p.Color == White {
-					target = ap.pos.Get(MustNewSquare(mov.To.file, mov.To.rank - 1))
+					target = ap.pos.Get(MustNewSquare(mov.To.file, mov.To.rank-1))
 				} else {
-					target = ap.pos.Get(MustNewSquare(mov.To.file, mov.To.rank + 1))
+					target = ap.pos.Get(MustNewSquare(mov.To.file, mov.To.rank+1))
 				}
 				if target.Kind == Pawn {
 					mov.EnPassant = true
@@ -528,7 +525,8 @@ func (ap *algParser) handle(cs []rune) error {
 	switch ap.state {
 	case number:
 		return ap.handleNumber(cs)
-	case white: fallthrough
+	case white:
+		fallthrough
 	case black:
 		return ap.handleMove(cs)
 	}
@@ -574,8 +572,8 @@ func (ap *algParser) Parse(start Position, r io.RuneReader) ([]Move, error) {
 		// handle a character according to the state
 		allowedRunes := map[int]string{
 			number: "1234567890.",
-			white:  "RNBQK"+"abcdefgh"+"12345678"+"x+#="+"O-",
-			black:  "RNBQK"+"abcdefgh"+"12345678"+"x+#="+"O-",
+			white:  "RNBQK" + "abcdefgh" + "12345678" + "x+#=" + "O-",
+			black:  "RNBQK" + "abcdefgh" + "12345678" + "x+#=" + "O-",
 		}
 
 		if strings.ContainsRune(allowedRunes[ap.state], c) {

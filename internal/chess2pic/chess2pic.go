@@ -47,14 +47,13 @@ func HandlePGN(in io.Reader, outFile string, col pic.Collection) error {
 	Debugf("Parsed PGN with %d moves", len(res.Moves))
 	Debugf("PGN tags: %#v", res.Tags)
 
-	poss := make([]chess.Position, 0, len(res.Moves) + 1)
+	poss := make([]chess.Position, 0, len(res.Moves)+1)
 	poss = append(poss, res.Start)
 	for i, mov := range res.Moves {
 		poss = append(poss, chess.Apply(poss[i], mov))
 	}
 
-	dst := &gif.GIF{
-	}
+	dst := &gif.GIF{}
 	quantizer := gogif.MedianCutQuantizer{NumColor: 64}
 	for _, pos := range poss {
 		img := pic.DrawPosition(col, pos)

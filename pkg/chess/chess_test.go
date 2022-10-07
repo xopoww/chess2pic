@@ -14,10 +14,10 @@ func TestStartingPosition(t *testing.T) {
 }
 
 func TestSquareString(t *testing.T) {
-	tcs := []struct{
+	tcs := []struct {
 		file int
 		rank int
-		s string
+		s    string
 	}{
 		{0, 0, "a1"},
 		{4, 3, "e4"},
@@ -34,8 +34,8 @@ func TestSquareString(t *testing.T) {
 }
 
 func TestMustNewSquareFromString(t *testing.T) {
-	tcs := []struct{
-		s string
+	tcs := []struct {
+		s    string
 		file int
 		rank int
 	}{
@@ -57,9 +57,9 @@ func TestMustNewSquareFromString(t *testing.T) {
 }
 
 func TestOnDiag(t *testing.T) {
-	tcs := []struct{
-		a string
-		b string
+	tcs := []struct {
+		a    string
+		b    string
 		want bool
 	}{
 		{"e4", "c6", true},
@@ -91,14 +91,14 @@ func TestOnDiag(t *testing.T) {
 
 func TestApply(t *testing.T) {
 
-	tcs :=  []struct {
+	tcs := []struct {
 		name  string
 		start []squarePiece
-		mov   move	
+		mov   move
 		end   []squarePiece
 	}{
 		{
-			name: "simple move",
+			name:  "simple move",
 			start: []squarePiece{{"e2", Piece{Pawn, White}}},
 			mov:   move{from: "e2", to: "e4"},
 			end:   []squarePiece{{"e4", Piece{Pawn, White}}},
@@ -128,7 +128,7 @@ func TestApply(t *testing.T) {
 			end:   []squarePiece{{"c1", Piece{King, White}}, {"d1", Piece{Rook, White}}},
 		},
 		{
-			name: "promotion",
+			name:  "promotion",
 			start: []squarePiece{{"e7", Piece{Pawn, White}}},
 			mov:   move{from: "e7", to: "e8", pr: Piece{Queen, White}},
 			end:   []squarePiece{{"e8", Piece{Queen, White}}},

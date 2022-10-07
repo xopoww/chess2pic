@@ -23,7 +23,6 @@ type Collection interface {
 	Piece(p chess.Piece) Image
 }
 
-
 type CanvasCollection interface {
 	Collection
 
@@ -31,7 +30,6 @@ type CanvasCollection interface {
 	// Bounds of returned image are exactly as Board().Bounds().
 	Canvas() draw.Image
 }
-
 
 type collection struct {
 	images [1 + 6 + 6]Image
@@ -45,13 +43,12 @@ func (col collection) Piece(p chess.Piece) Image {
 	if p.Kind == chess.None {
 		return nil
 	}
-	return col.images[1 + int(p.Color * 6) + int(p.Kind - chess.Pawn)]
+	return col.images[1+int(p.Color*6)+int(p.Kind-chess.Pawn)]
 }
 
 func (col collection) Canvas() draw.Image {
 	return image.NewRGBA(col.Board().Bounds())
 }
-
 
 func OpenCollection(dir fs.FS, prefix string) (Collection, error) {
 	col := collection{}
@@ -66,14 +63,14 @@ func OpenCollection(dir fs.FS, prefix string) (Collection, error) {
 
 	for color := chess.White; color <= chess.Black; color++ {
 		for kind := chess.Pawn; kind <= chess.King; kind++ {
-			img, err = loadSquareImage(dir, path.Join(color.Name(), kind.Name() + ".png"), prefix)
+			img, err = loadSquareImage(dir, path.Join(color.Name(), kind.Name()+".png"), prefix)
 			if err != nil {
 				return col, err
 			}
-			col.images[1 + int(color) * 6 + int(kind - chess.Pawn)] = img
+			col.images[1+int(color)*6+int(kind-chess.Pawn)] = img
 			if ps < 0 {
 				ps = img.Bounds().Dx()
-				if ps * 8 > bs {
+				if ps*8 > bs {
 					return nil, fmt.Errorf("piece image too big for the board")
 				}
 			} else {

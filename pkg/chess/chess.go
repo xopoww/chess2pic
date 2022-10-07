@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-
 type PieceKind int
 
 const (
@@ -37,7 +36,6 @@ func (kind PieceKind) Name() string {
 	}[kind]
 }
 
-
 type PieceColor int
 
 const (
@@ -53,9 +51,8 @@ func (color PieceColor) Name() string {
 	return [...]string{"white", "black"}[color]
 }
 
-
 type Piece struct {
-	Kind PieceKind
+	Kind  PieceKind
 	Color PieceColor
 }
 
@@ -66,18 +63,17 @@ func (p Piece) String() string {
 	return p.Color.String() + p.Kind.String()
 }
 
-
 type Square struct {
 	file int
 	rank int
 }
 
 func (sq Square) String() string {
-	return fmt.Sprintf("%c%d", 'a' + sq.file, sq.rank + 1)
+	return fmt.Sprintf("%c%d", 'a'+sq.file, sq.rank+1)
 }
 
 // NewSquare creates Square from file and rank coordinates.
-// Both coordinates are represented as integers from 0 ("A" file or 1st rank) to 7 ("H" file or 8th rank). 
+// Both coordinates are represented as integers from 0 ("A" file or 1st rank) to 7 ("H" file or 8th rank).
 // If either of coordinates falls out of this range, an error is returned.
 func NewSquare(file int, rank int) (Square, error) {
 	if file < 0 || file > 7 || rank < 0 || rank > 7 {
@@ -102,7 +98,7 @@ func NewSquareFromString(s string) (Square, error) {
 		return Square{}, errors.New("bad coordinates")
 	}
 	s = strings.ToLower(s)
-	return NewSquare(int(s[0] - 'a'), int(s[1] - '1'))
+	return NewSquare(int(s[0]-'a'), int(s[1]-'1'))
 }
 
 // MustNewSquareFromString acts like NewSquareFromString, but silently ignores errors and returns zero-value ("A1") instead.
@@ -112,10 +108,15 @@ func MustNewSquareFromString(s string) Square {
 }
 
 func OnDiag(a Square, b Square) bool {
-	abs := func(x int) int { if x < 0 { return -x } else { return x } }
-	return abs(a.file - b.file) == abs(a.rank - b.rank)
+	abs := func(x int) int {
+		if x < 0 {
+			return -x
+		} else {
+			return x
+		}
+	}
+	return abs(a.file-b.file) == abs(a.rank-b.rank)
 }
-
 
 type Position [8][8]Piece
 
@@ -139,37 +140,35 @@ func (pos Position) String() string {
 	return bldr.String()
 }
 
-
 func StartingPosition() Position {
 	var pos Position
-	
+
 	for file := 0; file < 8; file++ {
 		pos[file][1] = Piece{Kind: Pawn, Color: White}
 		pos[file][6] = Piece{Kind: Pawn, Color: Black}
 	}
-	
+
 	for file, kind := range []PieceKind{Rook, Knight, Bishop} {
-		pos[file][0]	= Piece{Kind: kind, Color: White}
-		pos[7-file][0]	= Piece{Kind: kind, Color: White}
-		pos[file][7]	= Piece{Kind: kind, Color: Black}
-		pos[7-file][7]	= Piece{Kind: kind, Color: Black}
+		pos[file][0] = Piece{Kind: kind, Color: White}
+		pos[7-file][0] = Piece{Kind: kind, Color: White}
+		pos[file][7] = Piece{Kind: kind, Color: Black}
+		pos[7-file][7] = Piece{Kind: kind, Color: Black}
 	}
 
 	pos[3][0] = Piece{Kind: Queen, Color: White}
 	pos[3][7] = Piece{Kind: Queen, Color: Black}
 	pos[4][0] = Piece{Kind: King, Color: White}
 	pos[4][7] = Piece{Kind: King, Color: Black}
-	
+
 	return pos
 }
-
 
 type Move struct {
 	From Square
 	To   Square
 
 	EnPassant bool
-	Castle	  bool
+	Castle    bool
 	Promotion Piece
 }
 

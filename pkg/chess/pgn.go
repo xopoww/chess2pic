@@ -28,7 +28,7 @@ func parseTag(r io.RuneScanner) (key string, value string, err error) {
 	state := KEY
 
 	escape := false
-	Loop:
+Loop:
 	for {
 		c, _, err := r.ReadRune()
 		if err != nil {

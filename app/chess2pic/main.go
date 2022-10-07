@@ -12,7 +12,7 @@ import (
 	"github.com/xopoww/chess2pic/pkg/pic"
 )
 
-var args struct{
+var args struct {
 	notation string
 
 	input  string

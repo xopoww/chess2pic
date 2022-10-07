@@ -6,46 +6,46 @@ import (
 )
 
 func TestFenParserParse(t *testing.T) {
-	tcs := []struct{
-		name string
+	tcs := []struct {
+		name     string
 		notation string
-		want Position
-		wantErr error
+		want     Position
+		wantErr  error
 	}{
 		{
-			name: "starting position",
+			name:     "starting position",
 			notation: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-			want: StartingPosition(),
+			want:     StartingPosition(),
 		},
 		{
-			name: "starting position with metainfo",
+			name:     "starting position with metainfo",
 			notation: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-			want: StartingPosition(),
+			want:     StartingPosition(),
 		},
 		{
-			name: "too long rank",
+			name:     "too long rank",
 			notation: "rnbqkbnrP/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-			wantErr: ErrTooLongRank,
+			wantErr:  ErrTooLongRank,
 		},
 		{
-			name: "too short rank",
+			name:     "too short rank",
 			notation: "rnbqkbn/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-			wantErr: ErrTooShortRank,
+			wantErr:  ErrTooShortRank,
 		},
 		{
-			name: "too many ranks",
+			name:     "too many ranks",
 			notation: "rnbqkbnr/pppppppp/8/8/8/8/8/PPPPPPPP/RNBQKBNR",
-			wantErr: ErrTooManyRanks,
+			wantErr:  ErrTooManyRanks,
 		},
 		{
-			name: "too few ranks",
+			name:     "too few ranks",
 			notation: "rnbqkbnr/pppppppp/8/8/8/PPPPPPPP/RNBQKBNR",
-			wantErr: ErrTooFewRanks,
+			wantErr:  ErrTooFewRanks,
 		},
 		{
-			name: "invalid character",
+			name:     "invalid character",
 			notation: "rnbqkbnr/pppppppp/8/8/8/8/PPP🌚PPPP/RNBQKBNR",
-			wantErr: InvalidRuneError{At: 29, Rune: '🌚'},
+			wantErr:  InvalidRuneError{At: 29, Rune: '🌚'},
 		},
 	}
 

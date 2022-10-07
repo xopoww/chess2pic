@@ -21,7 +21,7 @@ var (
 )
 
 type InvalidRuneError struct {
-	At 	 int
+	At   int
 	Rune rune
 }
 
@@ -70,7 +70,7 @@ func (fp fenParser) Parse(r io.RuneReader) (Position, error) {
 		// handle empty squares
 		if c >= '1' && c <= '8' {
 			n := int(c - '0')
-			if file + n - 1 > 7 {
+			if file+n-1 > 7 {
 				return pos, ErrTooLongRank
 			}
 			file += n
@@ -79,19 +79,19 @@ func (fp fenParser) Parse(r io.RuneReader) (Position, error) {
 
 		// handle piece
 		pieces := map[rune]Piece{
-			'p': {Pawn,		Black},
-			'n': {Knight,	Black},
-			'b': {Bishop,	Black},
-			'r': {Rook,		Black},
-			'q': {Queen,	Black},
-			'k': {King,		Black},
+			'p': {Pawn, Black},
+			'n': {Knight, Black},
+			'b': {Bishop, Black},
+			'r': {Rook, Black},
+			'q': {Queen, Black},
+			'k': {King, Black},
 
-			'P': {Pawn,		White},
-			'N': {Knight,	White},
-			'B': {Bishop,	White},
-			'R': {Rook,		White},
-			'Q': {Queen,	White},
-			'K': {King,		White},
+			'P': {Pawn, White},
+			'N': {Knight, White},
+			'B': {Bishop, White},
+			'R': {Rook, White},
+			'Q': {Queen, White},
+			'K': {King, White},
 		}
 		if p, exists := pieces[c]; exists {
 			if file > 7 {
