@@ -56,6 +56,39 @@ func TestMustNewSquareFromString(t *testing.T) {
 	}
 }
 
+func TestOnDiag(t *testing.T) {
+	tcs := []struct{
+		a string
+		b string
+		want bool
+	}{
+		{"e4", "c6", true},
+		{"e4", "g6", true},
+		{"e4", "c2", true},
+		{"e4", "g2", true},
+		{"e4", "c5", false},
+	}
+
+	for _, tc := range tcs {
+		t.Run(fmt.Sprintf("%s-%s", tc.a, tc.b), func(tt *testing.T) {
+			a, err := NewSquareFromString(tc.a)
+			if err != nil {
+				panic(err)
+			}
+			b, err := NewSquareFromString(tc.b)
+			if err != nil {
+				panic(err)
+			}
+			if got := OnDiag(a, b); got != tc.want {
+				tt.Errorf("(a, b): want %t, got %t", tc.want, got)
+			}
+			if got := OnDiag(b, a); got != tc.want {
+				tt.Errorf("(b, a): want %t, got %t", tc.want, got)
+			}
+		})
+	}
+}
+
 func TestApply(t *testing.T) {
 
 	tcs :=  []struct {

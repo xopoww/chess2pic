@@ -109,15 +109,105 @@ func pieceByLetter(letter rune) PieceKind {
 
 func findSources(pos Position, p Piece, destination Square, capture bool) []Square {
 	sources := make([]Square, 0)
+
+	// find king for pinned pieces checks
+	var king Square
+	findKing:
+	for file := range pos {
+		for rank := range pos[file] {
+			sq := MustNewSquare(file, rank)
+			pp := pos.Get(sq)
+			if pp.Kind == King && pp.Color == p.Color {
+				king = sq
+				break findKing
+			}
+		}
+	}
+
+	isPinned := func(sq Square) bool {
+		if p.Kind == King {
+			return false
+		}
+
+		// check lateral pin (same file)
+		if king.file == sq.file && king.file != destination.file {
+			var dr int
+			if king.rank < sq.rank {
+				dr = 1
+			} else {
+				dr = -1
+			}
+			for rank := sq.rank + dr; rank >= 0 && rank <= 7; rank += dr {
+				pp := pos.Get(MustNewSquare(sq.file, rank))
+				if pp.Color != p.Color && (pp.Kind == Rook || pp.Kind == Queen) {
+					return true
+				} else if pp.Kind != None {
+					break
+				}
+			}
+		// check lateral pin (same rank)
+		} else if king.rank == sq.rank && king.rank != destination.rank {
+			var df int
+			if king.file < sq.file {
+				df = 1
+			} else {
+				df = -1
+			}
+			for file := sq.file + df; file >= 0 && file <= 7; file += df {
+				pp := pos.Get(MustNewSquare(file, sq.rank))
+				if pp.Color != p.Color && (pp.Kind == Rook || pp.Kind == Queen) {
+					return true
+				} else if pp.Kind != None {
+					break
+				}
+			}
+		// check diagonal pin
+		} else if OnDiag(king, sq) {
+			var (
+				dr int
+				df int
+			)
+			if king.rank < sq.rank {
+				dr = 1
+			} else {
+				dr = -1
+			}
+			if king.file < sq.file {
+				df = 1
+			} else {
+				df = -1
+			}
+			// check that the piece leaves the diagonal
+			leftDiag := !OnDiag(king, destination) || ((king.rank - destination.rank) * (king.file - destination.file)) * (dr * df) < 0
+			if leftDiag {
+				for d := 1; ; d++ {
+					ssq, err := NewSquare(sq.file + d * df, sq.rank + d * dr)
+					if err != nil {
+						break
+					}
+					pp := pos.Get(ssq)
+					if pp.Color != p.Color && (pp.Kind == Bishop || pp.Kind == Queen) {
+						return true
+					} else if pp.Kind != None {
+						break
+					}
+				}
+			}
+		}
+		return false
+	}
 	
 	addSource := func(file, rank int) {
 		sq, err := NewSquare(file, rank)
 		if err != nil {
 			return
 		}
-		if pos.Get(sq) == p {
-			sources = append(sources, sq)
+
+		if pos.Get(sq) != p {
+			return
 		}
+
+		sources = append(sources, sq)
 	}
 
 	addDiagonal := func() {
@@ -230,7 +320,13 @@ func findSources(pos Position, p Piece, destination Square, capture bool) []Squa
 		}
 	}
 
-	return sources
+	filteredSources := make([]Square, 0)
+	for _, sq := range sources {
+		if !isPinned(sq) {
+			filteredSources = append(filteredSources, sq)
+		}
+	}
+	return filteredSources
 }
 
 func (ap *algParser) handleMove(cs []rune) error {

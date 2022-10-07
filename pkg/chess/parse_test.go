@@ -148,6 +148,55 @@ func TestAlgParserParse(t *testing.T) {
 			notation: "1. a7",
 			wantErr: true,
 		},
+
+		{
+			name: "lateral pin (same file)",
+			start: "k6q/8/8/8/8/8/7R/7K",
+			notation: "1. Rb2",
+			wantErr: true,
+		},
+		{
+			name: "lateral pin (same file) (legal)",
+			start: "k6q/8/8/8/8/8/7R/7K",
+			notation: "1. Rh4",
+			want: []move{
+				{from: "h2", to: "h4"},
+			},
+		},
+		{
+			name: "lateral pin (same rank)",
+			start: "k7/8/8/8/8/8/q5RK/8",
+			notation: "1. Rg5",
+			wantErr: true,
+		},
+		{
+			name: "lateral pin (same rank) (legal)",
+			start: "k7/8/8/8/8/8/q5RK/8",
+			notation: "1. Rb2",
+			want: []move{
+				{from: "g2", to: "b2"},
+			},
+		},
+		{
+			name: "diagonal pin",
+			start: "1k6/8/q7/8/2Q5/8/4K3/8",
+			notation: "1. Qe4",
+			wantErr: true,
+		},
+		{
+			name: "diagonal pin (other diag)",
+			start: "1k6/8/q7/8/2Q5/8/4K3/8",
+			notation: "1. Qg4",
+			wantErr: true,
+		},
+		{
+			name: "diagonal pin (legal)",
+			start: "1k6/8/q7/8/2Q5/8/4K3/8",
+			notation: "1. Qd3",
+			want: []move{
+				{from: "c4", to: "d3"},
+			},
+		},
 	}
 
 

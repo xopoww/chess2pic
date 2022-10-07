@@ -76,7 +76,6 @@ func (sq Square) String() string {
 	return fmt.Sprintf("%c%d", 'a' + sq.file, sq.rank + 1)
 }
 
-
 // NewSquare creates Square from file and rank coordinates.
 // Both coordinates are represented as integers from 0 ("A" file or 1st rank) to 7 ("H" file or 8th rank). 
 // If either of coordinates falls out of this range, an error is returned.
@@ -110,6 +109,11 @@ func NewSquareFromString(s string) (Square, error) {
 func MustNewSquareFromString(s string) Square {
 	sq, _ := NewSquareFromString(s)
 	return sq
+}
+
+func OnDiag(a Square, b Square) bool {
+	abs := func(x int) int { if x < 0 { return -x } else { return x } }
+	return abs(a.file - b.file) == abs(a.rank - b.rank)
 }
 
 
