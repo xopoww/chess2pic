@@ -8,7 +8,7 @@ A tool for visualizing chess positions and games
  - parse FEN positions and turn them into PNG images
  - parse PGN games and turn them into GIF animations
 
-*note: current parsers have limited capabilities, refer to docs for more info*
+*note: current parsers have limited capabilities,* *~~refer to docs for more info~~ TODO: add parser documentation*
 
 
 ## Build
