@@ -395,6 +395,11 @@ func (ap *algParser) handleMove(cs []rune) error {
 
 	mov := Move{}
 
+	// check for check/checkmate
+	if c := cs[len(cs)-1]; c == '+' || c == '#' {
+		cs = cs[:len(cs)-1]
+	}
+
 	// check for promotion
 	if cs[len(cs)-2] == '=' {
 		if p.Kind != Pawn {

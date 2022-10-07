@@ -101,6 +101,39 @@ func TestAlgParserParse(t *testing.T) {
 			},
 		},
 		{
+			name: "check",
+			start: "1k6/7Q/2K5/8/8/8/8/8",
+			notation: "1. Qh8+",
+			want: []move{
+				{from: "h7", to: "h8"},
+			},
+		},
+		{
+			name: "checkmate",
+			start: "1k6/7Q/2K5/8/8/8/8/8",
+			notation: "1. Qb7#",
+			want: []move{
+				{from: "h7", to: "b7"},
+			},
+		},
+		{
+			name: "promotion checkmate",
+			start: "1k6/7P/1K6/8/8/8/8/8",
+			notation: "1. h8=Q#",
+			want: []move{
+				{from: "h7", to: "h8", pr: Piece{Queen, White}},
+			},
+		},
+		{
+			name: "capture with promotion checkmate",
+			start: "1k4n1/5P1P/1K6/8/8/8/8/8",
+			notation: "1. hxg8=Q#",
+			want: []move{
+				{from: "h7", to: "g8", pr: Piece{Queen, White}},
+			},
+		},
+
+		{
 			name: "illegal pawn move",
 			start: "k7/8/8/8/8/8/P7/NRBB1Q1K",
 			notation: "1. e4",
