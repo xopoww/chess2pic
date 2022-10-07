@@ -9,11 +9,6 @@ import (
 	"unicode"
 )
 
-type MoveParser interface {
-	Parse(start Position, r io.RuneReader) ([]Move, error)
-}
-
-
 const (
 	number = iota
 	white

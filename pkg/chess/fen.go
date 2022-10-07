@@ -6,12 +6,6 @@ import (
 	"io"
 )
 
-// PositionParser parses UTF-8 representation of chess position
-type PositionParser interface {
-	Parse(r io.RuneReader) (Position, error)
-}
-
-
 type fenParser struct {
 }
 
