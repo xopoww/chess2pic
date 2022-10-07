@@ -37,3 +37,8 @@ chess2pic -notation pgn -in game.pgn
 ```
 
 Use `chess2pic -help` for full info on command line arguments.
+
+
+## License
+
+This software is distributed under MIT License (see [LICENSE.txt](LICENSE.txt)). Note that this project uses thrid party media files distributed under CC BY-SA 3.0, see [this file](pkg/pic/assets/img/LICENSE.txt) for details.
