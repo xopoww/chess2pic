@@ -36,6 +36,11 @@ Create GIFs from PGN games in a similar way:
 chess2pic -notation pgn -in game.pgn
 ```
 
+You can also look from black's side of the board:
+```
+chess2pic -notation pgn -in game.pgn -from black
+```
+
 Use `chess2pic -help` for full info on command line arguments.
 
 
