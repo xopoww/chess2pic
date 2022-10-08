@@ -1,0 +1,86 @@
+swagger: '2.0'
+
+info:
+  title: chess2pic
+  description: chess2pic REST API server
+  version: 1.0.0
+
+produces:
+  - "application/json"
+  - "image/png"
+  - "image/gif"
+
+schemes:
+  - "http"
+  - "https"
+
+definitions:
+  Error:
+    type: object
+    properties:
+      error:
+        type: string
+    required:
+      - error
+    example:
+      error: you've done something wrong
+
+paths:
+  /fen:
+    post:
+      summary: Convert FEN position to PNG image
+      produces:
+      parameters:
+      - in: body
+        name: body
+        description: FEN visualization request
+        required: true
+        schema:
+          type: object
+          properties:
+            notation:
+              type: string
+              description: Chess position in FEN notation
+          required:
+          - notation
+          example:
+            notation: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+      responses:
+        '200':
+          description: Converted image
+          schema:
+            type: string
+            format: binary
+        '400':
+          description: Client error (typically, a malformed FEN notation)
+          schema:
+            $ref: "#/definitions/Error"
+  
+  /pgn:
+    post:
+      summary: Convert PGN game to GIF animation
+      parameters:
+      - in: body
+        name: body
+        description: PGN visualization request
+        required: true
+        schema:
+          type: object
+          properties:
+            notation:
+              type: string
+              description: Chess game in PGN notation
+          required:
+          - notation
+          example:
+            notation: "[FEN \"k7/1p6/8/8/8/8/6P1/7K w - - 0 1\"]\n\n1. g4 b5 2. g5 b4"
+      responses:
+        '200':
+          description: Converted image
+          schema:
+            type: string
+            format: binary
+        '400':
+          description: Client error (typically, a malformed PGN notation)
+          schema:
+            $ref: "#/definitions/Error"
