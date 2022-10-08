@@ -5,31 +5,48 @@ info:
   description: chess2pic REST API server
   version: 1.0.0
 
+consumes:
+  - "application/json"
+
 produces:
   - "application/json"
-  - "image/png"
-  - "image/gif"
 
 schemes:
   - "http"
-  - "https"
 
 definitions:
-  Error:
+  ApiResult:
     type: object
     properties:
-      error:
-        type: string
+      ok:
+        type: boolean
     required:
-      - error
-    example:
-      error: you've done something wrong
+    - ok
+  
+  ImageResult:
+    allOf:
+    - $ref: "#/definitions/ApiResult"
+    - type: object
+      properties:
+        result:
+          type: string
+          format: byte
+          description: Result image in base64 encoding
+      required:
+      - result
+  
+  ErrorResult:
+    allOf:
+    - $ref: "#/definitions/ApiResult"
+    - type: object
+      properties:
+        error:
+          type: string
 
 paths:
   /fen:
     post:
       summary: Convert FEN position to PNG image
-      produces:
       parameters:
       - in: body
         name: body
@@ -41,21 +58,25 @@ paths:
             notation:
               type: string
               description: Chess position in FEN notation
+            from-white:
+              type: boolean
+              description: visualize form white's persective
           required:
           - notation
+          - from-white
           example:
             notation: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+            from-white: true
       responses:
         '200':
-          description: Converted image
+          description: Converted PNG image
           schema:
-            type: string
-            format: binary
+            $ref: "#/definitions/ImageResult"
         '400':
           description: Client error (typically, a malformed FEN notation)
           schema:
-            $ref: "#/definitions/Error"
-  
+            $ref: "#/definitions/ErrorResult"
+
   /pgn:
     post:
       summary: Convert PGN game to GIF animation
@@ -70,17 +91,22 @@ paths:
             notation:
               type: string
               description: Chess game in PGN notation
+            from-white:
+              type: boolean
+              description: visualize form white's persective
           required:
           - notation
+          - from-white
           example:
             notation: "[FEN \"k7/1p6/8/8/8/8/6P1/7K w - - 0 1\"]\n\n1. g4 b5 2. g5 b4"
+            from-white: true
       responses:
         '200':
-          description: Converted image
+          description: Converted GIF image
           schema:
-            type: string
-            format: binary
+            $ref: "#/definitions/ImageResult"
         '400':
           description: Client error (typically, a malformed PGN notation)
           schema:
-            $ref: "#/definitions/Error"
+            $ref: "#/definitions/ErrorResult"
+            

@@ -40,7 +40,6 @@ func NewChess2picAPIAPI(spec *loads.Document) *Chess2picAPIAPI {
 
 		JSONConsumer: runtime.JSONConsumer(),
 
-		BinProducer:  runtime.ByteStreamProducer(),
 		JSONProducer: runtime.JSONProducer(),
 
 		PostFenHandler: PostFenHandlerFunc(func(params PostFenParams) middleware.Responder {
@@ -81,10 +80,6 @@ type Chess2picAPIAPI struct {
 	//   - application/json
 	JSONConsumer runtime.Consumer
 
-	// BinProducer registers a producer for the following mime types:
-	//   - image/gif
-	//   - image/png
-	BinProducer runtime.Producer
 	// JSONProducer registers a producer for the following mime types:
 	//   - application/json
 	JSONProducer runtime.Producer
@@ -166,9 +161,6 @@ func (o *Chess2picAPIAPI) Validate() error {
 		unregistered = append(unregistered, "JSONConsumer")
 	}
 
-	if o.BinProducer == nil {
-		unregistered = append(unregistered, "BinProducer")
-	}
 	if o.JSONProducer == nil {
 		unregistered = append(unregistered, "JSONProducer")
 	}
@@ -225,10 +217,6 @@ func (o *Chess2picAPIAPI) ProducersFor(mediaTypes []string) map[string]runtime.P
 	result := make(map[string]runtime.Producer, len(mediaTypes))
 	for _, mt := range mediaTypes {
 		switch mt {
-		case "image/gif":
-			result["image/gif"] = o.BinProducer
-		case "image/png":
-			result["image/png"] = o.BinProducer
 		case "application/json":
 			result["application/json"] = o.JSONProducer
 		}

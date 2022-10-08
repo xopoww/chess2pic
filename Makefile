@@ -1,13 +1,15 @@
-BINARY_NAME=chess2pic
-
 build: chess2pic chess2pic-api
 
 chess2pic:
-	go build -o build/${BINARY_NAME} ./cmd/chess2pic
+	go build -o build/chess2pic ./cmd/chess2pic
 
 chess2pic-api:
-	swagger generate server -A chess2pic-api -f api/chess2pic-api.yml
-	go build -o build/${BINARY_NAME} ./cmd/chess2pic-api-server
+	go generate ./restapi
+	go mod tidy -compat=1.17
+	go build -o build/chess2pic-api-server ./cmd/chess2pic-api-server
+
+run-api:
+	PORT=65000 ./build/chess2pic-api-server
 
 clean:
 	go clean

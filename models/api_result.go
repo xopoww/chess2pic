@@ -14,22 +14,21 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// Error error
-// Example: {"error":"you've done something wrong"}
+// APIResult Api result
 //
-// swagger:model Error
-type Error struct {
+// swagger:model ApiResult
+type APIResult struct {
 
-	// error
+	// ok
 	// Required: true
-	Error *string `json:"error"`
+	Ok *bool `json:"ok"`
 }
 
-// Validate validates this error
-func (m *Error) Validate(formats strfmt.Registry) error {
+// Validate validates this Api result
+func (m *APIResult) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateError(formats); err != nil {
+	if err := m.validateOk(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -39,22 +38,22 @@ func (m *Error) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Error) validateError(formats strfmt.Registry) error {
+func (m *APIResult) validateOk(formats strfmt.Registry) error {
 
-	if err := validate.Required("error", "body", m.Error); err != nil {
+	if err := validate.Required("ok", "body", m.Ok); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// ContextValidate validates this error based on context it is used
-func (m *Error) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this Api result based on context it is used
+func (m *APIResult) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *Error) MarshalBinary() ([]byte, error) {
+func (m *APIResult) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -62,8 +61,8 @@ func (m *Error) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *Error) UnmarshalBinary(b []byte) error {
-	var res Error
+func (m *APIResult) UnmarshalBinary(b []byte) error {
+	var res APIResult
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

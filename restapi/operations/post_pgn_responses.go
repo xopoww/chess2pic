@@ -6,7 +6,6 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"io"
 	"net/http"
 
 	"github.com/go-openapi/runtime"
@@ -18,7 +17,7 @@ import (
 const PostPgnOKCode int = 200
 
 /*
-PostPgnOK Converted image
+PostPgnOK Converted GIF image
 
 swagger:response postPgnOK
 */
@@ -27,7 +26,7 @@ type PostPgnOK struct {
 	/*
 	  In: Body
 	*/
-	Payload io.ReadCloser `json:"body,omitempty"`
+	Payload *models.ImageResult `json:"body,omitempty"`
 }
 
 // NewPostPgnOK creates PostPgnOK with default headers values
@@ -37,13 +36,13 @@ func NewPostPgnOK() *PostPgnOK {
 }
 
 // WithPayload adds the payload to the post pgn o k response
-func (o *PostPgnOK) WithPayload(payload io.ReadCloser) *PostPgnOK {
+func (o *PostPgnOK) WithPayload(payload *models.ImageResult) *PostPgnOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the post pgn o k response
-func (o *PostPgnOK) SetPayload(payload io.ReadCloser) {
+func (o *PostPgnOK) SetPayload(payload *models.ImageResult) {
 	o.Payload = payload
 }
 
@@ -51,9 +50,11 @@ func (o *PostPgnOK) SetPayload(payload io.ReadCloser) {
 func (o *PostPgnOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
 	}
 }
 
@@ -70,7 +71,7 @@ type PostPgnBadRequest struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.Error `json:"body,omitempty"`
+	Payload *models.ErrorResult `json:"body,omitempty"`
 }
 
 // NewPostPgnBadRequest creates PostPgnBadRequest with default headers values
@@ -80,13 +81,13 @@ func NewPostPgnBadRequest() *PostPgnBadRequest {
 }
 
 // WithPayload adds the payload to the post pgn bad request response
-func (o *PostPgnBadRequest) WithPayload(payload *models.Error) *PostPgnBadRequest {
+func (o *PostPgnBadRequest) WithPayload(payload *models.ErrorResult) *PostPgnBadRequest {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the post pgn bad request response
-func (o *PostPgnBadRequest) SetPayload(payload *models.Error) {
+func (o *PostPgnBadRequest) SetPayload(payload *models.ErrorResult) {
 	o.Payload = payload
 }
 

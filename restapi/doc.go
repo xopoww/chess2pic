@@ -5,7 +5,6 @@
 //	chess2pic REST API server
 //	Schemes:
 //	  http
-//	  https
 //	Host: localhost
 //	BasePath: /
 //	Version: 1.0.0
@@ -14,8 +13,6 @@
 //	  - application/json
 //
 //	Produces:
-//	  - image/gif
-//	  - image/png
 //	  - application/json
 //
 // swagger:meta

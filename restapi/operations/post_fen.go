@@ -61,10 +61,14 @@ func (o *PostFen) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 }
 
 // PostFenBody post fen body
-// Example: {"notation":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"}
+// Example: {"from-white":true,"notation":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"}
 //
 // swagger:model PostFenBody
 type PostFenBody struct {
+
+	// visualize form white's persective
+	// Required: true
+	FromWhite *bool `json:"from-white"`
 
 	// Chess position in FEN notation
 	// Required: true
@@ -75,6 +79,10 @@ type PostFenBody struct {
 func (o *PostFenBody) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := o.validateFromWhite(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := o.validateNotation(formats); err != nil {
 		res = append(res, err)
 	}
@@ -82,6 +90,15 @@ func (o *PostFenBody) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (o *PostFenBody) validateFromWhite(formats strfmt.Registry) error {
+
+	if err := validate.Required("body"+"."+"from-white", "body", o.FromWhite); err != nil {
+		return err
+	}
+
 	return nil
 }
 

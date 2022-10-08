@@ -3,14 +3,28 @@
 package restapi
 
 import (
+	"bytes"
 	"crypto/tls"
 	"net/http"
+	"strings"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt"
 
+	"github.com/xopoww/chess2pic/internal/chess2pic"
+	"github.com/xopoww/chess2pic/models"
+	"github.com/xopoww/chess2pic/pkg/chess"
+	"github.com/xopoww/chess2pic/pkg/pic"
 	"github.com/xopoww/chess2pic/restapi/operations"
+)
+
+var (
+	_true = true
+	_false = false
+	apiResultOk = models.APIResult{Ok: &_true}
+	apiResultError = models.APIResult{Ok: &_false}
 )
 
 //go:generate swagger generate server --target ../../chess2pic --name Chess2picAPI --spec ../api/chess2pic-api.yaml --principal interface{}
@@ -35,19 +49,50 @@ func configureAPI(api *operations.Chess2picAPIAPI) http.Handler {
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
-	api.BinProducer = runtime.ByteStreamProducer()
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.PostFenHandler == nil {
-		api.PostFenHandler = operations.PostFenHandlerFunc(func(params operations.PostFenParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.PostFen has not yet been implemented")
-		})
-	}
-	if api.PostPgnHandler == nil {
-		api.PostPgnHandler = operations.PostPgnHandlerFunc(func(params operations.PostPgnParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.PostPgn has not yet been implemented")
-		})
-	}
+	api.PostFenHandler = operations.PostFenHandlerFunc(func(params operations.PostFenParams) middleware.Responder {
+		var from chess.PieceColor
+		if *params.Body.FromWhite {
+			from = chess.White
+		} else {
+			from = chess.Black
+		}
+
+		buf := &bytes.Buffer{}
+		err := chess2pic.HandleFEN(strings.NewReader(*params.Body.Notation), buf, pic.DefaultCollection, from)
+		if err != nil {
+			resp := operations.NewPostFenBadRequest()
+			resp.SetPayload(&models.ErrorResult{APIResult: apiResultError, Error: err.Error()})
+			return resp
+		} else {
+			data := buf.Bytes()
+			resp := operations.NewPostFenOK()
+			resp.SetPayload(&models.ImageResult{APIResult: apiResultOk, Result: (*strfmt.Base64)(&data)})
+			return resp
+		}
+	})
+	api.PostPgnHandler = operations.PostPgnHandlerFunc(func(params operations.PostPgnParams) middleware.Responder {
+		var from chess.PieceColor
+		if *params.Body.FromWhite {
+			from = chess.White
+		} else {
+			from = chess.Black
+		}
+		
+		buf := &bytes.Buffer{}
+		err := chess2pic.HandlePGN(strings.NewReader(*params.Body.Notation), buf, pic.DefaultCollection, from)
+		if err != nil {
+			resp := operations.NewPostPgnBadRequest()
+			resp.SetPayload(&models.ErrorResult{APIResult: apiResultError, Error: err.Error()})
+			return resp
+		} else {
+			data := buf.Bytes()
+			resp := operations.NewPostPgnOK()
+			resp.SetPayload(&models.ImageResult{APIResult: apiResultOk, Result: (*strfmt.Base64)(&data)})
+			return resp
+		}
+	})
 
 	api.PreServerShutdown = func() {}
 

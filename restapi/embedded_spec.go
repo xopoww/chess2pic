@@ -18,14 +18,14 @@ var (
 
 func init() {
 	SwaggerJSON = json.RawMessage([]byte(`{
+  "consumes": [
+    "application/json"
+  ],
   "produces": [
-    "application/json",
-    "image/png",
-    "image/gif"
+    "application/json"
   ],
   "schemes": [
-    "http",
-    "https"
+    "http"
   ],
   "swagger": "2.0",
   "info": {
@@ -46,15 +46,21 @@ func init() {
             "schema": {
               "type": "object",
               "required": [
-                "notation"
+                "notation",
+                "from-white"
               ],
               "properties": {
+                "from-white": {
+                  "description": "visualize form white's persective",
+                  "type": "boolean"
+                },
                 "notation": {
                   "description": "Chess position in FEN notation",
                   "type": "string"
                 }
               },
               "example": {
+                "from-white": true,
                 "notation": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
               }
             }
@@ -62,16 +68,15 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Converted image",
+            "description": "Converted PNG image",
             "schema": {
-              "type": "string",
-              "format": "binary"
+              "$ref": "#/definitions/ImageResult"
             }
           },
           "400": {
             "description": "Client error (typically, a malformed FEN notation)",
             "schema": {
-              "$ref": "#/definitions/Error"
+              "$ref": "#/definitions/ErrorResult"
             }
           }
         }
@@ -89,15 +94,21 @@ func init() {
             "schema": {
               "type": "object",
               "required": [
-                "notation"
+                "notation",
+                "from-white"
               ],
               "properties": {
+                "from-white": {
+                  "description": "visualize form white's persective",
+                  "type": "boolean"
+                },
                 "notation": {
                   "description": "Chess game in PGN notation",
                   "type": "string"
                 }
               },
               "example": {
+                "from-white": true,
                 "notation": "[FEN \"k7/1p6/8/8/8/8/6P1/7K w - - 0 1\"]\n\n1. g4 b5 2. g5 b4"
               }
             }
@@ -105,16 +116,15 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Converted image",
+            "description": "Converted GIF image",
             "schema": {
-              "type": "string",
-              "format": "binary"
+              "$ref": "#/definitions/ImageResult"
             }
           },
           "400": {
             "description": "Client error (typically, a malformed PGN notation)",
             "schema": {
-              "$ref": "#/definitions/Error"
+              "$ref": "#/definitions/ErrorResult"
             }
           }
         }
@@ -122,31 +132,63 @@ func init() {
     }
   },
   "definitions": {
-    "Error": {
+    "ApiResult": {
       "type": "object",
       "required": [
-        "error"
+        "ok"
       ],
       "properties": {
-        "error": {
-          "type": "string"
+        "ok": {
+          "type": "boolean"
         }
-      },
-      "example": {
-        "error": "you've done something wrong"
       }
+    },
+    "ErrorResult": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ApiResult"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "error": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "ImageResult": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ApiResult"
+        },
+        {
+          "type": "object",
+          "required": [
+            "result"
+          ],
+          "properties": {
+            "result": {
+              "description": "Result image in base64 encoding",
+              "type": "string",
+              "format": "byte"
+            }
+          }
+        }
+      ]
     }
   }
 }`))
 	FlatSwaggerJSON = json.RawMessage([]byte(`{
+  "consumes": [
+    "application/json"
+  ],
   "produces": [
-    "application/json",
-    "image/gif",
-    "image/png"
+    "application/json"
   ],
   "schemes": [
-    "http",
-    "https"
+    "http"
   ],
   "swagger": "2.0",
   "info": {
@@ -167,15 +209,21 @@ func init() {
             "schema": {
               "type": "object",
               "required": [
-                "notation"
+                "notation",
+                "from-white"
               ],
               "properties": {
+                "from-white": {
+                  "description": "visualize form white's persective",
+                  "type": "boolean"
+                },
                 "notation": {
                   "description": "Chess position in FEN notation",
                   "type": "string"
                 }
               },
               "example": {
+                "from-white": true,
                 "notation": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
               }
             }
@@ -183,16 +231,15 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Converted image",
+            "description": "Converted PNG image",
             "schema": {
-              "type": "string",
-              "format": "binary"
+              "$ref": "#/definitions/ImageResult"
             }
           },
           "400": {
             "description": "Client error (typically, a malformed FEN notation)",
             "schema": {
-              "$ref": "#/definitions/Error"
+              "$ref": "#/definitions/ErrorResult"
             }
           }
         }
@@ -210,15 +257,21 @@ func init() {
             "schema": {
               "type": "object",
               "required": [
-                "notation"
+                "notation",
+                "from-white"
               ],
               "properties": {
+                "from-white": {
+                  "description": "visualize form white's persective",
+                  "type": "boolean"
+                },
                 "notation": {
                   "description": "Chess game in PGN notation",
                   "type": "string"
                 }
               },
               "example": {
+                "from-white": true,
                 "notation": "[FEN \"k7/1p6/8/8/8/8/6P1/7K w - - 0 1\"]\n\n1. g4 b5 2. g5 b4"
               }
             }
@@ -226,16 +279,15 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Converted image",
+            "description": "Converted GIF image",
             "schema": {
-              "type": "string",
-              "format": "binary"
+              "$ref": "#/definitions/ImageResult"
             }
           },
           "400": {
             "description": "Client error (typically, a malformed PGN notation)",
             "schema": {
-              "$ref": "#/definitions/Error"
+              "$ref": "#/definitions/ErrorResult"
             }
           }
         }
@@ -243,19 +295,51 @@ func init() {
     }
   },
   "definitions": {
-    "Error": {
+    "ApiResult": {
       "type": "object",
       "required": [
-        "error"
+        "ok"
       ],
       "properties": {
-        "error": {
-          "type": "string"
+        "ok": {
+          "type": "boolean"
         }
-      },
-      "example": {
-        "error": "you've done something wrong"
       }
+    },
+    "ErrorResult": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ApiResult"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "error": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "ImageResult": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ApiResult"
+        },
+        {
+          "type": "object",
+          "required": [
+            "result"
+          ],
+          "properties": {
+            "result": {
+              "description": "Result image in base64 encoding",
+              "type": "string",
+              "format": "byte"
+            }
+          }
+        }
+      ]
     }
   }
 }`))

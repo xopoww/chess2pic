@@ -61,10 +61,14 @@ func (o *PostPgn) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 }
 
 // PostPgnBody post pgn body
-// Example: {"notation":"[FEN \"k7/1p6/8/8/8/8/6P1/7K w - - 0 1\"]\n\n1. g4 b5 2. g5 b4"}
+// Example: {"from-white":true,"notation":"[FEN \"k7/1p6/8/8/8/8/6P1/7K w - - 0 1\"]\n\n1. g4 b5 2. g5 b4"}
 //
 // swagger:model PostPgnBody
 type PostPgnBody struct {
+
+	// visualize form white's persective
+	// Required: true
+	FromWhite *bool `json:"from-white"`
 
 	// Chess game in PGN notation
 	// Required: true
@@ -75,6 +79,10 @@ type PostPgnBody struct {
 func (o *PostPgnBody) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := o.validateFromWhite(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := o.validateNotation(formats); err != nil {
 		res = append(res, err)
 	}
@@ -82,6 +90,15 @@ func (o *PostPgnBody) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (o *PostPgnBody) validateFromWhite(formats strfmt.Registry) error {
+
+	if err := validate.Required("body"+"."+"from-white", "body", o.FromWhite); err != nil {
+		return err
+	}
+
 	return nil
 }
 

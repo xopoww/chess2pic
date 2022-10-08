@@ -6,7 +6,6 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"io"
 	"net/http"
 
 	"github.com/go-openapi/runtime"
@@ -18,7 +17,7 @@ import (
 const PostFenOKCode int = 200
 
 /*
-PostFenOK Converted image
+PostFenOK Converted PNG image
 
 swagger:response postFenOK
 */
@@ -27,7 +26,7 @@ type PostFenOK struct {
 	/*
 	  In: Body
 	*/
-	Payload io.ReadCloser `json:"body,omitempty"`
+	Payload *models.ImageResult `json:"body,omitempty"`
 }
 
 // NewPostFenOK creates PostFenOK with default headers values
@@ -37,13 +36,13 @@ func NewPostFenOK() *PostFenOK {
 }
 
 // WithPayload adds the payload to the post fen o k response
-func (o *PostFenOK) WithPayload(payload io.ReadCloser) *PostFenOK {
+func (o *PostFenOK) WithPayload(payload *models.ImageResult) *PostFenOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the post fen o k response
-func (o *PostFenOK) SetPayload(payload io.ReadCloser) {
+func (o *PostFenOK) SetPayload(payload *models.ImageResult) {
 	o.Payload = payload
 }
 
@@ -51,9 +50,11 @@ func (o *PostFenOK) SetPayload(payload io.ReadCloser) {
 func (o *PostFenOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
 	}
 }
 
@@ -70,7 +71,7 @@ type PostFenBadRequest struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.Error `json:"body,omitempty"`
+	Payload *models.ErrorResult `json:"body,omitempty"`
 }
 
 // NewPostFenBadRequest creates PostFenBadRequest with default headers values
@@ -80,13 +81,13 @@ func NewPostFenBadRequest() *PostFenBadRequest {
 }
 
 // WithPayload adds the payload to the post fen bad request response
-func (o *PostFenBadRequest) WithPayload(payload *models.Error) *PostFenBadRequest {
+func (o *PostFenBadRequest) WithPayload(payload *models.ErrorResult) *PostFenBadRequest {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the post fen bad request response
-func (o *PostFenBadRequest) SetPayload(payload *models.Error) {
+func (o *PostFenBadRequest) SetPayload(payload *models.ErrorResult) {
 	o.Payload = payload
 }
 

@@ -6,7 +6,6 @@ import (
 	"image/gif"
 	"image/png"
 	"io"
-	"os"
 
 	"github.com/andybons/gogif"
 	"github.com/xopoww/chess2pic/pkg/chess"
@@ -21,7 +20,7 @@ func readerToRuneReader(r io.Reader) io.RuneReader {
 	}
 }
 
-func HandleFEN(in io.Reader, outFile string, col pic.Collection, from chess.PieceColor) error {
+func HandleFEN(in io.Reader, out io.Writer, col pic.Collection, from chess.PieceColor) error {
 	rs := readerToRuneReader(in)
 
 	pos, err := chess.FEN().Parse(rs)
@@ -30,15 +29,10 @@ func HandleFEN(in io.Reader, outFile string, col pic.Collection, from chess.Piec
 	}
 
 	img := pic.DrawPosition(col, pos, from)
-	out, err := os.Create(outFile + ".png")
-	if err != nil {
-		return err
-	}
-	defer out.Close()
 	return png.Encode(out, img)
 }
 
-func HandlePGN(in io.Reader, outFile string, col pic.Collection, from chess.PieceColor) error {
+func HandlePGN(in io.Reader, out io.Writer, col pic.Collection, from chess.PieceColor) error {
 	res, err := chess.ParsePGN(in)
 	if err != nil {
 		return err
@@ -64,10 +58,5 @@ func HandlePGN(in io.Reader, outFile string, col pic.Collection, from chess.Piec
 	}
 	dst.Delay[len(dst.Delay)-1] = 500
 
-	out, err := os.Create(outFile + ".gif")
-	if err != nil {
-		return err
-	}
-	defer out.Close()
 	return gif.EncodeAll(out, dst)
 }
