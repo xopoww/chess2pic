@@ -52,6 +52,41 @@ func TestPgnParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "with comment",
+			notation: "1. e4 e5 2. Nf3 Nf6 { Something really smart } 3. Nxe5 Nc6 4. Nxc6 dxc6",
+			want: pgnResult{
+				movs: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6",
+			},
+		},
+		{
+			name: "with game result (win)",
+			notation: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6 1-0",
+			want: pgnResult{
+				movs: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6",
+			},
+		},
+		{
+			name: "with game result (draw)",
+			notation: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6 1/2-1/2",
+			want: pgnResult{
+				movs: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6",
+			},
+		},
+		{
+			name: "with game result (ongoing)",
+			notation: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6 *",
+			want: pgnResult{
+				movs: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 dxc6",
+			},
+		},
+		{
+			name: "with game result (ongoing on black's turn)",
+			notation: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6 *",
+			want: pgnResult{
+				movs: "1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nc6 4. Nxc6",
+			},
+		},
 	}
 
 	for _, tc := range tcs {

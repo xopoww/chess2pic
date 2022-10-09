@@ -13,6 +13,7 @@ const (
 	number = iota
 	white
 	black
+	finished
 )
 
 type IllegalMoveError struct {
@@ -522,6 +523,16 @@ func (ap *algParser) handleMove(cs []rune) error {
 }
 
 func (ap *algParser) handle(cs []rune) error {
+	// check for game result
+	s := string(cs)
+	results := []string{"1-0", "0-1", "1/2-1/2", "*"}
+	for _, result := range results {
+		if s == result {
+			ap.state = finished
+			return nil
+		}
+	}
+
 	switch ap.state {
 	case number:
 		return ap.handleNumber(cs)
@@ -540,6 +551,7 @@ func (ap *algParser) Parse(start Position, r io.RuneReader) ([]Move, error) {
 	ap.nread = -1
 	ap.state = number
 	ap.lastNum = -1
+	comment := false
 
 	var cs []rune
 
@@ -557,6 +569,17 @@ func (ap *algParser) Parse(start Position, r io.RuneReader) ([]Move, error) {
 		}
 		ap.nread++
 
+		// handle comments
+		if comment {
+			if c == '}' {
+				comment = false
+			}
+			continue
+		} else if c == '{' {
+			comment = true
+			continue
+		}
+
 		// handle whitespace
 		if unicode.IsSpace(c) {
 			// if there is a string collected - handle it
@@ -570,10 +593,13 @@ func (ap *algParser) Parse(start Position, r io.RuneReader) ([]Move, error) {
 		}
 
 		// handle a character according to the state
+		
+		// consider game result characters allowed for every state
+		// because it seems to be the easiest workaround
 		allowedRunes := map[int]string{
-			number: "1234567890.",
-			white:  "RNBQK" + "abcdefgh" + "12345678" + "x+#=" + "O-",
-			black:  "RNBQK" + "abcdefgh" + "12345678" + "x+#=" + "O-",
+			number: "1234567890." + "/-*",
+			white:  "RNBQK" + "abcdefgh" + "12345678" + "x+#=" + "O-" + "102/-*",
+			black:  "RNBQK" + "abcdefgh" + "12345678" + "x+#=" + "O-" + "102/-*",
 		}
 
 		if strings.ContainsRune(allowedRunes[ap.state], c) {
