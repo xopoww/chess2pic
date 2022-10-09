@@ -19,9 +19,16 @@ import (
 // swagger:model ApiResult
 type APIResult struct {
 
-	// ok
+	// Human-readable description of an error
+	Error string `json:"error,omitempty"`
+
+	// If ok is true, result is not empty, otherwise error is not empty
 	// Required: true
 	Ok *bool `json:"ok"`
+
+	// Result image in base64 encoding
+	// Format: byte
+	Result strfmt.Base64 `json:"result,omitempty"`
 }
 
 // Validate validates this Api result

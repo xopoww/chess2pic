@@ -68,15 +68,9 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Converted PNG image",
+            "description": "API call result",
             "schema": {
-              "$ref": "#/definitions/ImageResult"
-            }
-          },
-          "400": {
-            "description": "Client error (typically, a malformed FEN notation)",
-            "schema": {
-              "$ref": "#/definitions/ErrorResult"
+              "$ref": "#/definitions/ApiResult"
             }
           }
         }
@@ -116,15 +110,9 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Converted GIF image",
+            "description": "API call result",
             "schema": {
-              "$ref": "#/definitions/ImageResult"
-            }
-          },
-          "400": {
-            "description": "Client error (typically, a malformed PGN notation)",
-            "schema": {
-              "$ref": "#/definitions/ErrorResult"
+              "$ref": "#/definitions/ApiResult"
             }
           }
         }
@@ -138,45 +126,20 @@ func init() {
         "ok"
       ],
       "properties": {
+        "error": {
+          "description": "Human-readable description of an error",
+          "type": "string"
+        },
         "ok": {
+          "description": "If ok is true, result is not empty, otherwise error is not empty",
           "type": "boolean"
+        },
+        "result": {
+          "description": "Result image in base64 encoding",
+          "type": "string",
+          "format": "byte"
         }
       }
-    },
-    "ErrorResult": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/ApiResult"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "error": {
-              "type": "string"
-            }
-          }
-        }
-      ]
-    },
-    "ImageResult": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/ApiResult"
-        },
-        {
-          "type": "object",
-          "required": [
-            "result"
-          ],
-          "properties": {
-            "result": {
-              "description": "Result image in base64 encoding",
-              "type": "string",
-              "format": "byte"
-            }
-          }
-        }
-      ]
     }
   }
 }`))
@@ -231,15 +194,9 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Converted PNG image",
+            "description": "API call result",
             "schema": {
-              "$ref": "#/definitions/ImageResult"
-            }
-          },
-          "400": {
-            "description": "Client error (typically, a malformed FEN notation)",
-            "schema": {
-              "$ref": "#/definitions/ErrorResult"
+              "$ref": "#/definitions/ApiResult"
             }
           }
         }
@@ -279,15 +236,9 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Converted GIF image",
+            "description": "API call result",
             "schema": {
-              "$ref": "#/definitions/ImageResult"
-            }
-          },
-          "400": {
-            "description": "Client error (typically, a malformed PGN notation)",
-            "schema": {
-              "$ref": "#/definitions/ErrorResult"
+              "$ref": "#/definitions/ApiResult"
             }
           }
         }
@@ -301,45 +252,20 @@ func init() {
         "ok"
       ],
       "properties": {
+        "error": {
+          "description": "Human-readable description of an error",
+          "type": "string"
+        },
         "ok": {
+          "description": "If ok is true, result is not empty, otherwise error is not empty",
           "type": "boolean"
+        },
+        "result": {
+          "description": "Result image in base64 encoding",
+          "type": "string",
+          "format": "byte"
         }
       }
-    },
-    "ErrorResult": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/ApiResult"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "error": {
-              "type": "string"
-            }
-          }
-        }
-      ]
-    },
-    "ImageResult": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/ApiResult"
-        },
-        {
-          "type": "object",
-          "required": [
-            "result"
-          ],
-          "properties": {
-            "result": {
-              "description": "Result image in base64 encoding",
-              "type": "string",
-              "format": "byte"
-            }
-          }
-        }
-      ]
     }
   }
 }`))

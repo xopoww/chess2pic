@@ -17,7 +17,7 @@ import (
 const PostPgnOKCode int = 200
 
 /*
-PostPgnOK Converted GIF image
+PostPgnOK API call result
 
 swagger:response postPgnOK
 */
@@ -26,7 +26,7 @@ type PostPgnOK struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.ImageResult `json:"body,omitempty"`
+	Payload *models.APIResult `json:"body,omitempty"`
 }
 
 // NewPostPgnOK creates PostPgnOK with default headers values
@@ -36,13 +36,13 @@ func NewPostPgnOK() *PostPgnOK {
 }
 
 // WithPayload adds the payload to the post pgn o k response
-func (o *PostPgnOK) WithPayload(payload *models.ImageResult) *PostPgnOK {
+func (o *PostPgnOK) WithPayload(payload *models.APIResult) *PostPgnOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the post pgn o k response
-func (o *PostPgnOK) SetPayload(payload *models.ImageResult) {
+func (o *PostPgnOK) SetPayload(payload *models.APIResult) {
 	o.Payload = payload
 }
 
@@ -50,51 +50,6 @@ func (o *PostPgnOK) SetPayload(payload *models.ImageResult) {
 func (o *PostPgnOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
-}
-
-// PostPgnBadRequestCode is the HTTP code returned for type PostPgnBadRequest
-const PostPgnBadRequestCode int = 400
-
-/*
-PostPgnBadRequest Client error (typically, a malformed PGN notation)
-
-swagger:response postPgnBadRequest
-*/
-type PostPgnBadRequest struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.ErrorResult `json:"body,omitempty"`
-}
-
-// NewPostPgnBadRequest creates PostPgnBadRequest with default headers values
-func NewPostPgnBadRequest() *PostPgnBadRequest {
-
-	return &PostPgnBadRequest{}
-}
-
-// WithPayload adds the payload to the post pgn bad request response
-func (o *PostPgnBadRequest) WithPayload(payload *models.ErrorResult) *PostPgnBadRequest {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the post pgn bad request response
-func (o *PostPgnBadRequest) SetPayload(payload *models.ErrorResult) {
-	o.Payload = payload
-}
-
-// WriteResponse to the client
-func (o *PostPgnBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
-
-	rw.WriteHeader(400)
 	if o.Payload != nil {
 		payload := o.Payload
 		if err := producer.Produce(rw, payload); err != nil {

@@ -17,7 +17,7 @@ import (
 const PostFenOKCode int = 200
 
 /*
-PostFenOK Converted PNG image
+PostFenOK API call result
 
 swagger:response postFenOK
 */
@@ -26,7 +26,7 @@ type PostFenOK struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.ImageResult `json:"body,omitempty"`
+	Payload *models.APIResult `json:"body,omitempty"`
 }
 
 // NewPostFenOK creates PostFenOK with default headers values
@@ -36,13 +36,13 @@ func NewPostFenOK() *PostFenOK {
 }
 
 // WithPayload adds the payload to the post fen o k response
-func (o *PostFenOK) WithPayload(payload *models.ImageResult) *PostFenOK {
+func (o *PostFenOK) WithPayload(payload *models.APIResult) *PostFenOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the post fen o k response
-func (o *PostFenOK) SetPayload(payload *models.ImageResult) {
+func (o *PostFenOK) SetPayload(payload *models.APIResult) {
 	o.Payload = payload
 }
 
@@ -50,51 +50,6 @@ func (o *PostFenOK) SetPayload(payload *models.ImageResult) {
 func (o *PostFenOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
-}
-
-// PostFenBadRequestCode is the HTTP code returned for type PostFenBadRequest
-const PostFenBadRequestCode int = 400
-
-/*
-PostFenBadRequest Client error (typically, a malformed FEN notation)
-
-swagger:response postFenBadRequest
-*/
-type PostFenBadRequest struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.ErrorResult `json:"body,omitempty"`
-}
-
-// NewPostFenBadRequest creates PostFenBadRequest with default headers values
-func NewPostFenBadRequest() *PostFenBadRequest {
-
-	return &PostFenBadRequest{}
-}
-
-// WithPayload adds the payload to the post fen bad request response
-func (o *PostFenBadRequest) WithPayload(payload *models.ErrorResult) *PostFenBadRequest {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the post fen bad request response
-func (o *PostFenBadRequest) SetPayload(payload *models.ErrorResult) {
-	o.Payload = payload
-}
-
-// WriteResponse to the client
-func (o *PostFenBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
-
-	rw.WriteHeader(400)
 	if o.Payload != nil {
 		payload := o.Payload
 		if err := producer.Produce(rw, payload); err != nil {

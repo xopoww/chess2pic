@@ -20,28 +20,16 @@ definitions:
     properties:
       ok:
         type: boolean
+        description: If ok is true, result is not empty, otherwise error is not empty
+      result:
+        type: string
+        format: byte
+        description: Result image in base64 encoding
+      error:
+        type: string
+        description: Human-readable description of an error
     required:
     - ok
-  
-  ImageResult:
-    allOf:
-    - $ref: "#/definitions/ApiResult"
-    - type: object
-      properties:
-        result:
-          type: string
-          format: byte
-          description: Result image in base64 encoding
-      required:
-      - result
-  
-  ErrorResult:
-    allOf:
-    - $ref: "#/definitions/ApiResult"
-    - type: object
-      properties:
-        error:
-          type: string
 
 paths:
   /fen:
@@ -69,13 +57,9 @@ paths:
             from-white: true
       responses:
         '200':
-          description: Converted PNG image
+          description: API call result
           schema:
-            $ref: "#/definitions/ImageResult"
-        '400':
-          description: Client error (typically, a malformed FEN notation)
-          schema:
-            $ref: "#/definitions/ErrorResult"
+            $ref: "#/definitions/ApiResult"
 
   /pgn:
     post:
@@ -102,11 +86,7 @@ paths:
             from-white: true
       responses:
         '200':
-          description: Converted GIF image
+          description: API call result
           schema:
-            $ref: "#/definitions/ImageResult"
-        '400':
-          description: Client error (typically, a malformed PGN notation)
-          schema:
-            $ref: "#/definitions/ErrorResult"
+            $ref: "#/definitions/ApiResult"
             
