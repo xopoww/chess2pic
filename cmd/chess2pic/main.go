@@ -13,6 +13,8 @@ import (
 	"github.com/xopoww/chess2pic/pkg/pic"
 )
 
+const defaultOutName = "chess2pic_out"
+
 var args struct {
 	notation string
 
@@ -31,8 +33,13 @@ func init() {
 	flag.StringVar(&args.notation, "notation", "", "notation syntax name")
 	flag.StringVar(&args.input, "in", "", "input file name")
 	flag.StringVar(&args.data, "data", "", "input text")
-	flag.StringVar(&args.output, "out", "chess2pic", "output file name (without extension)")
-	flag.StringVar(&args.from, "from", "white", "from which player's perspective (\"white\" or \"black\") to draw")
+	flag.StringVar(&args.output, "out", "", fmt.Sprintf(
+		"output file name (empty name is replaced with %q with the proper extension)",
+		defaultOutName,
+	))
+	flag.StringVar(&args.from, "from", "white",
+		"from which player's perspective (\"white\" or \"black\") to draw",
+	)
 
 	flag.BoolVar(&chess2pic.DEBUG, "debug", false, "enable debug output")
 }
@@ -66,12 +73,24 @@ func main() {
 		in = strings.NewReader(args.data)
 	}
 
-	var err error
+	if args.output == "" {
+		switch args.notation {
+		case "fen":
+			args.output = defaultOutName + ".png"
+		case "pgn":
+			args.output = defaultOutName + ".gif"
+		}
+	}
+	out, err := os.Create(args.output)
+	if err != nil {
+		chess2pic.Fatalf("error creating %q: %s", args.output, err)
+	}
+
 	switch args.notation {
 	case "fen":
-		err = chess2pic.HandleFEN(in, args.output, pic.DefaultCollection, from)
+		err = chess2pic.HandleFEN(in, out, pic.DefaultCollection, from)
 	case "pgn":
-		err = chess2pic.HandlePGN(in, args.output, pic.DefaultCollection, from)
+		err = chess2pic.HandlePGN(in, out, pic.DefaultCollection, from)
 	default:
 		err = fmt.Errorf("unknown notation: %q", args.notation)
 	}

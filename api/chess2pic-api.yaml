@@ -1,0 +1,92 @@
+swagger: '2.0'
+
+info:
+  title: chess2pic
+  description: chess2pic REST API server
+  version: 1.0.0
+
+consumes:
+  - "application/json"
+
+produces:
+  - "application/json"
+
+schemes:
+  - "http"
+
+definitions:
+  ApiResult:
+    type: object
+    properties:
+      ok:
+        type: boolean
+        description: If ok is true, result is not empty, otherwise error is not empty
+      result:
+        type: string
+        format: byte
+        description: Result image in base64 encoding
+      error:
+        type: string
+        description: Human-readable description of an error
+    required:
+    - ok
+
+paths:
+  /fen:
+    post:
+      summary: Convert FEN position to PNG image
+      parameters:
+      - in: body
+        name: body
+        description: FEN visualization request
+        required: true
+        schema:
+          type: object
+          properties:
+            notation:
+              type: string
+              description: Chess position in FEN notation
+            from-white:
+              type: boolean
+              description: visualize form white's persective
+          required:
+          - notation
+          - from-white
+          example:
+            notation: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+            from-white: true
+      responses:
+        '200':
+          description: API call result
+          schema:
+            $ref: "#/definitions/ApiResult"
+
+  /pgn:
+    post:
+      summary: Convert PGN game to GIF animation
+      parameters:
+      - in: body
+        name: body
+        description: PGN visualization request
+        required: true
+        schema:
+          type: object
+          properties:
+            notation:
+              type: string
+              description: Chess game in PGN notation
+            from-white:
+              type: boolean
+              description: visualize form white's persective
+          required:
+          - notation
+          - from-white
+          example:
+            notation: "[FEN \"k7/1p6/8/8/8/8/6P1/7K w - - 0 1\"]\n\n1. g4 b5 2. g5 b4"
+            from-white: true
+      responses:
+        '200':
+          description: API call result
+          schema:
+            $ref: "#/definitions/ApiResult"
+            
