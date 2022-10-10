@@ -11,9 +11,15 @@ A tool for visualizing chess positions and games
 *note: current parsers have limited capabilities,* *~~refer to docs for more info~~ TODO: add parser documentation*
 
 
+## Prerequisites
+
+ - go 1.17+
+ - [go-swagger](https://goswagger.io/install.html)
+
+
 ## Build
 
-```
+```bash
 make build
 # binaries will be in build/ directory
 ```
@@ -22,27 +28,38 @@ make build
 ## Usage
 
 Visualize position from FEN notation:
-```
+```bash
 chess2pic -notation fen -data "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 ```
 
 Or from file:
-```
+```bash
 chess2pic -notation fen -in position.fen
 ```
 
 Create GIFs from PGN games in a similar way:
-```
+```bash
 chess2pic -notation pgn -in game.pgn
 ```
 
 You can also look from black's side of the board:
-```
+```bash
 chess2pic -notation pgn -in game.pgn -from black
 ```
 
 Use `chess2pic -help` for full info on command line arguments.
 
+
+## API server
+
+chess2pic also provides a REST API server. You can check out its Swagger 2.0 spec [here](./api/chess2pic-api.yaml). After building the binaries run the server with
+```bash
+make run-api
+```
+
+Server will be listening on http://localhost:65000 (Swagger UI is awailable on http://localhost:65000/docs).
+
+You can also check out [chess2pic web app](https://github.com/xopoww/chess2pic-web)!
 
 ## License
 
