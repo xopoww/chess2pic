@@ -4,9 +4,10 @@ chess2pic:
 	go build -o build/chess2pic ./cmd/chess2pic
 
 chess2pic-api:
-	go generate ./restapi
-	go mod tidy -compat=1.17
 	go build -o build/chess2pic-api-server ./cmd/chess2pic-api-server
+
+chess2pic-api-docker:
+	docker build --tag chess2pic-api .
 
 run-api:
 	PORT=65000 ./build/chess2pic-api-server
