@@ -18,5 +18,9 @@ WORKDIR /app
 COPY --from=build /chess2pic/build/chess2pic-api-server .
 
 EXPOSE 8080
+
+RUN adduser -D myuser
+USER myuser
+
 ENV HOST=0.0.0.0 PORT=8080
 CMD [ "./chess2pic-api-server" ]
