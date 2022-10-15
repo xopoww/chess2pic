@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
@@ -75,7 +76,7 @@ func configureAPI(api *operations.Chess2picAPIAPI) http.Handler {
 		
 		buf := &bytes.Buffer{}
 		err := chess2pic.HandlePGN(strings.NewReader(*params.Body.Notation), buf, pic.DefaultCollection, from)
-		
+
 		ok := err == nil
 		result := &models.APIResult{Ok: &ok}
 		if err != nil {
@@ -114,9 +115,42 @@ func setupMiddlewares(handler http.Handler) http.Handler {
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics.
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
+	const RPS = 5.0 // requests per second
+	lastCheck := time.Now()
+	allowed := RPS
+
+	// rateLimit returns true is the request was rejected due to rate limiting
+	rateLimit := func(w http.ResponseWriter) bool {
+		current := time.Now()
+		delta := current.Sub(lastCheck)
+		lastCheck = current
+		allowed += RPS * float64(delta) / float64(time.Second)
+		if allowed > RPS {
+			allowed = RPS
+		}
+		if allowed < 1.0 {
+			w.Header().Add("Retry-After", "1")
+			w.WriteHeader(http.StatusTooManyRequests)
+			return true
+		}
+		allowed -= 1.0
+		return false
+	}
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("request: URL=%s method=%s remote=%s", r.URL, r.Method, r.RemoteAddr)
 		
+		if rateLimit(w) {
+			return
+		}
+
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("PANIC recovered: %s", r)
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		}()
+
 		handler.ServeHTTP(w, r)
 	})
 }
